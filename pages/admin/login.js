@@ -47,7 +47,7 @@ export default function AdminLogin() {
             </svg>
           </div>
           <h1 className="text-3xl font-bold text-zinc-800 mb-2">Admin Login</h1>
-          <p className="text-zinc-600">PrisJ Cafe Dashboard</p>
+          <p className="text-zinc-600">Sifted House Admin Dashboard</p>
         </div>
 
         {error && (
