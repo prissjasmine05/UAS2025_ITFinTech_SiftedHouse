@@ -150,18 +150,25 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-[#F5F5DD]">
-      {/* Header - Matching homepage style */}
-      <div className="bg-white/80 backdrop-blur-md shadow-sm border-b border-zinc-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-zinc-800">PrisJ Cafe Admin Dashboard ☕</h1>
-          <button
-            onClick={handleLogout}
-            className="px-5 py-2 bg-red-600 text-white rounded-full font-semibold hover:bg-red-700 transition-colors shadow-md"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
+      {/* Header - Sifted House Theme */}
+      <div className="bg-[#FFFBE7]/90 backdrop-blur-md shadow-sm border-b border-[#E5D8CC] sticky top-0 z-10">
+      <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div className="flex items-center gap-3">
+      <img
+        src="/logo-sifted-house.png"
+        alt="Sifted House Logo"
+        className="h-10 w-auto"
+      />
+      <h1 className="text-2xl font-bold text-[#37432B]">Admin Dashboard</h1>
+    </div>
+    <button
+      onClick={handleLogout}
+      className="px-5 py-2 bg-[#682C23] text-[#FFFBE7] rounded-full font-semibold hover:bg-[#37432B] transition-colors shadow-md"
+    >
+      Logout
+    </button>
+  </div>
+</div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Tabs - Matching homepage button style */}
@@ -198,146 +205,143 @@ export default function AdminDashboard() {
           </button>
         </div>
 
-        {/* CHECKOUT TAB */}
-        {activeTab === 'checkout' && (
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-            <div className="p-6 border-b bg-zinc-50">
-              <div className="flex justify-between items-center mb-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-zinc-800">📦 Checkout List</h2>
-                  <p className="text-sm text-zinc-600 mt-1">Daftar semua transaksi checkout</p>
-                </div>
-              </div>
+{/* CHECKOUT TAB */}
+{activeTab === 'checkout' && (
+  <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-[#E5D8CC]">
+    <div className="p-6 border-b border-[#E5D8CC] bg-[#FFFBE7]">
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h2 className="text-2xl font-bold text-[#37432B]">📦 Checkout List</h2>
+          <p className="text-sm text-[#6A6F4C] mt-1">Daftar semua transaksi checkout</p>
+        </div>
+      </div>
 
-              {/* Filters */}
-              <div className="flex flex-wrap gap-4 items-end">
-                {/* Status Filter */}
-                <div>
-                  <label className="block text-sm font-medium text-zinc-700 mb-2">Filter Status</label>
-                  <select
-                    value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
-                    className="px-4 py-2 border-2 border-zinc-200 rounded-lg focus:ring-2 focus:ring-zinc-800 focus:border-transparent"
+      {/* Filters */}
+      <div className="flex flex-wrap gap-4 items-end">
+        {/* Status Filter */}
+        <div>
+          <label className="block text-sm font-medium text-[#37432B] mb-2">Filter Status</label>
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="px-4 py-2 border-2 border-[#6A6F4C]/40 rounded-full bg-white text-[#37432B] focus:ring-2 focus:ring-[#6A6F4C] focus:border-transparent"
+          >
+            <option value="All">All Status</option>
+            <option value="PAID">PAID</option>
+            <option value="PENDING">PENDING</option>
+            <option value="FAILED">FAILED</option>
+            <option value="EXPIRED">EXPIRED</option>
+          </select>
+        </div>
+
+        {/* Date Range Filter */}
+        <div>
+          <label className="block text-sm font-medium text-[#37432B] mb-2">Start Date</label>
+          <input
+            type="date"
+            value={dateRange.start}
+            onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
+            className="px-4 py-2 border-2 border-[#6A6F4C]/40 rounded-full bg-white text-[#37432B] focus:ring-2 focus:ring-[#6A6F4C] focus:border-transparent"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-[#37432B] mb-2">End Date</label>
+          <input
+            type="date"
+            value={dateRange.end}
+            onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
+            className="px-4 py-2 border-2 border-[#6A6F4C]/40 rounded-full bg-white text-[#37432B] focus:ring-2 focus:ring-[#6A6F4C] focus:border-transparent"
+          />
+        </div>
+
+        {/* Reset Button */}
+        {(filterStatus !== 'All' || dateRange.start || dateRange.end) && (
+          <button
+            onClick={() => {
+              setFilterStatus('All');
+              setDateRange({ start: '', end: '' });
+            }}
+            className="px-4 py-2 bg-[#6A6F4C]/20 text-[#37432B] rounded-full hover:bg-[#6A6F4C]/30 transition font-medium border border-[#6A6F4C]/30"
+          >
+            Reset Filters
+          </button>
+        )}
+      </div>
+    </div>
+
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <thead className="bg-[#E5D8CC]/40 border-b border-[#E5D8CC]">
+          <tr>
+            <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider">Order ID</th>
+            <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider">Customer</th>
+            <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider">Amount</th>
+            <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider">Status</th>
+            <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider">Date</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-[#E5D8CC]">
+          {data?.payments
+            ?.filter((payment) => {
+              if (filterStatus !== 'All' && payment.status !== filterStatus) return false;
+              if (dateRange.start || dateRange.end) {
+                const paymentDate = new Date(payment.createdAt);
+                const startDate = dateRange.start ? new Date(dateRange.start) : null;
+                const endDate = dateRange.end ? new Date(dateRange.end + 'T23:59:59') : null;
+                if (startDate && paymentDate < startDate) return false;
+                if (endDate && paymentDate > endDate) return false;
+              }
+              return true;
+            })
+            .map((payment, index) => (
+              <tr
+                key={payment._id}
+                className="transition bg-white hover:bg-[#E5D8CC]/30"
+              >
+                <td className="py-4 px-6">
+                  <span className="font-mono text-sm font-medium text-[#37432B]">
+                    {payment.externalId}
+                  </span>
+                </td>
+                <td className="py-4 px-6">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-[#6A6F4C] rounded-full flex items-center justify-center text-[#FFFBE7] font-bold text-xs mr-3">
+                      {payment.payerEmail.charAt(0).toUpperCase()}
+                    </div>
+                    <span className="text-sm text-[#37432B]">{payment.payerEmail}</span>
+                  </div>
+                </td>
+                <td className="py-4 px-6">
+                  <span className="text-base font-bold text-[#37432B]">
+                    Rp {payment.amount.toLocaleString('id-ID')}
+                  </span>
+                </td>
+                <td className="py-4 px-6">
+                  <span
+                    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${
+                      payment.status === 'PAID'
+                        ? 'bg-[#6A6F4C]/20 text-[#37432B] border-[#6A6F4C]/40'
+                        : payment.status === 'PENDING'
+                        ? 'bg-[#E5D8CC]/50 text-[#6A6F4C] border-[#6A6F4C]/30'
+                        : 'bg-[#682C23]/20 text-[#682C23] border-[#682C23]/40'
+                    }`}
                   >
-                    <option value="All">All Status</option>
-                    <option value="PAID">PAID</option>
-                    <option value="PENDING">PENDING</option>
-                    <option value="FAILED">FAILED</option>
-                    <option value="EXPIRED">EXPIRED</option>
-                  </select>
-                </div>
-
-                {/* Date Range Filter */}
-                <div>
-                  <label className="block text-sm font-medium text-zinc-700 mb-2">Start Date</label>
-                  <input
-                    type="date"
-                    value={dateRange.start}
-                    onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-                    className="px-4 py-2 border-2 border-zinc-200 rounded-lg focus:ring-2 focus:ring-zinc-800 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-zinc-700 mb-2">End Date</label>
-                  <input
-                    type="date"
-                    value={dateRange.end}
-                    onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-                    className="px-4 py-2 border-2 border-zinc-200 rounded-lg focus:ring-2 focus:ring-zinc-800 focus:border-transparent"
-                  />
-                </div>
-
-                {/* Reset Button */}
-                {(filterStatus !== 'All' || dateRange.start || dateRange.end) && (
-                  <button
-                    onClick={() => {
-                      setFilterStatus('All');
-                      setDateRange({ start: '', end: '' });
-                    }}
-                    className="px-4 py-2 bg-zinc-200 text-zinc-700 rounded-lg hover:bg-zinc-300 transition font-medium"
-                  >
-                    Reset Filters
-                  </button>
-                )}
-              </div>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-zinc-100 border-b-2 border-zinc-200">
-                  <tr>
-                    <th className="text-left py-4 px-6 text-xs font-bold text-zinc-700 uppercase tracking-wider">Order ID</th>
-                    <th className="text-left py-4 px-6 text-xs font-bold text-zinc-700 uppercase tracking-wider">Customer</th>
-                    <th className="text-left py-4 px-6 text-xs font-bold text-zinc-700 uppercase tracking-wider">Amount</th>
-                    <th className="text-left py-4 px-6 text-xs font-bold text-zinc-700 uppercase tracking-wider">Status</th>
-                    <th className="text-left py-4 px-6 text-xs font-bold text-zinc-700 uppercase tracking-wider">Date</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-100">
-                  {data?.payments
-                    ?.filter((payment) => {
-                      // Filter by status
-                      if (filterStatus !== 'All' && payment.status !== filterStatus) return false;
-                      
-                      // Filter by date range
-                      if (dateRange.start || dateRange.end) {
-                        const paymentDate = new Date(payment.createdAt);
-                        const startDate = dateRange.start ? new Date(dateRange.start) : null;
-                        const endDate = dateRange.end ? new Date(dateRange.end + 'T23:59:59') : null;
-                        
-                        if (startDate && paymentDate < startDate) return false;
-                        if (endDate && paymentDate > endDate) return false;
-                      }
-                      
-                      return true;
-                    })
-                    .map((payment, index) => (
-                      <tr key={payment._id} className={`hover:bg-zinc-50 transition ${index % 2 === 0 ? 'bg-white' : 'bg-zinc-50/50'}`}>
-                        <td className="py-4 px-6">
-                          <span className="font-mono text-sm font-medium text-zinc-900">{payment.externalId}</span>
-                        </td>
-                        <td className="py-4 px-6">
-                          <div className="flex items-center">
-                            <div className="w-8 h-8 bg-gradient-to-br from-zinc-400 to-zinc-600 rounded-full flex items-center justify-center text-white font-bold text-xs mr-3">
-                              {payment.payerEmail.charAt(0).toUpperCase()}
-                            </div>
-                            <span className="text-sm text-zinc-900">{payment.payerEmail}</span>
-                          </div>
-                        </td>
-                        <td className="py-4 px-6">
-                          <span className="text-base font-bold text-zinc-900">
-                            Rp {payment.amount.toLocaleString('id-ID')}
-                          </span>
-                        </td>
-                        <td className="py-4 px-6">
-                          <span
-                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${
-                              payment.status === 'PAID'
-                                ? 'bg-green-100 text-green-800 border border-green-300'
-                                : payment.status === 'PENDING'
-                                ? 'bg-yellow-100 text-yellow-800 border border-yellow-300'
-                                : 'bg-red-100 text-red-800 border border-red-300'
-                            }`}
-                          >
-                            {payment.status === 'PAID' && '✓ '}
-                            {payment.status === 'PENDING' && '⏱ '}
-                            {payment.status === 'FAILED' && '✗ '}
-                            {payment.status}
-                          </span>
-                        </td>
-                        <td className="py-4 px-6 text-sm text-zinc-600">
-                          {new Date(payment.createdAt).toLocaleDateString('id-ID', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric'
-                          })}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
+                    {payment.status}
+                  </span>
+                </td>
+                <td className="py-4 px-6 text-sm text-[#6A6F4C]">
+                  {new Date(payment.createdAt).toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+    </div>
             
             {/* Footer Summary */}
             <div className="p-4 bg-zinc-50 border-t flex justify-between items-center">
