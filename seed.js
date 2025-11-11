@@ -5,7 +5,7 @@ require('dotenv').config({ path: './.env.local' });
 // --- LIST PRODUK ---
 const productsToSeed = [
   {
-    name: "sifted Aren Creamy Latte",
+    name: "sifted aren creamy latte",
     price: 29000,
     description: "salted aren foam, espresso signature milk.",
     category: "Drinks",
