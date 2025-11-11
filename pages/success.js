@@ -15,15 +15,15 @@ export default function SuccessPage() {
   useClearCart();
 
   return (
-    <div className="bg-[#F5F5DD] min-h-screen flex items-center justify-center font-sans text-zinc-800">
-      <div className="bg-white p-8 rounded-xl shadow-lg text-center max-w-md">
-        <h1 className="text-4xl font-bold text-green-500 mb-4">✅</h1>
+    <div className="bg-[#FFFBE7] min-h-screen flex items-center justify-center font-sans text-[#37432B]">
+      <div className="bg-white p-8 rounded-xl shadow-lg text-center max-w-md border border-[#E5D8CC]">
+        <h1 className="text-4xl font-bold text-[#6A6F4C] mb-4">✅</h1>
         <h2 className="text-2xl font-bold mb-2">Pembayaran Berhasil!</h2>
-        <p className="text-zinc-600 mb-6">
+        <p className="text-[#6A6F4C] mb-6">
           Terima kasih telah berbelanja. Kami akan segera memproses pesananmu.
         </p>
         <Link href="/select-items">
-          <button className="w-full bg-zinc-800 text-white font-bold py-3 px-6 rounded-lg hover:bg-zinc-700 transition-colors">
+          <button className="w-full bg-[#6A6F4C] text-[#FFFBE7] font-bold py-3 px-6 rounded-full hover:bg-[#37432B] transition-colors border border-[#6A6F4C]">
             Kembali ke Menu
           </button>
         </Link>

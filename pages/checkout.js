@@ -5,8 +5,7 @@ export default function CheckoutPage() {
   const { cart, addToCart, removeFromCart } = useCart();
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const tax = subtotal * 0.11;
-  const total = subtotal + tax;
+  const total = subtotal; // Pajak dihapus, jadi total = subtotal saja
 
   return (
     <div className="bg-[#FFFBE7] min-h-screen font-sans text-[#37432B] py-8">
@@ -103,10 +102,6 @@ export default function CheckoutPage() {
                   <div className="flex justify-between text-[#6A6F4C]">
                     <span>Subtotal</span>
                     <span>Rp {subtotal.toLocaleString('id-ID')}</span>
-                  </div>
-                  <div className="flex justify-between text-[#6A6F4C]">
-                    <span>Pajak (11%)</span>
-                    <span>Rp {tax.toLocaleString('id-ID')}</span>
                   </div>
                   <div className="flex justify-between font-bold text-xl border-t border-[#E5D8CC] pt-2 mt-2 text-[#37432B]">
                     <span>Total</span>
