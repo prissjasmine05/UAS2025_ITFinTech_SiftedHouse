@@ -1,8 +1,9 @@
+// pages/select-items.js
 import Link from 'next/link';
 import { useCart } from '../context/CartContext';
 import { useState } from 'react';
 import ProfileIcon from '../components/ProfileIcon';
-import LoginChooser from '../components/LoginChooser';
+import LoginChooser from '../components/LoginChooser'; // tetap diimport biar aman
 
 const categories = ['All', 'Drinks', 'Snacks', 'Bundles'];
 
@@ -10,31 +11,18 @@ export default function SelectItemsPage({ products }) {
   const { cart, addToCart, removeFromCart, getItemQuantity } = useCart();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
-  const [showLoginChooser, setShowLoginChooser] = useState(false);
 
-  const filteredProducts = products
-    .filter(product => {
+  const filteredProducts = (products || [])
+    .filter((product) => {
       if (selectedCategory === 'All') return true;
       return product.category === selectedCategory;
     })
-    .filter(product =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    .filter((product) =>
+      (product?.name || '').toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-  // Check if user is logged in
-  const checkAuth = () => {
-    if (typeof window === 'undefined') return false;
-    const user = localStorage.getItem('user');
-    const admin = localStorage.getItem('admin');
-    return !!(user || admin);
-  };
-
-  // Handle Add to Cart with auth check
+  // Langsung add ke cart tanpa login
   const handleAddToCart = (product) => {
-    if (!checkAuth()) {
-      setShowLoginChooser(true);
-      return;
-    }
     addToCart(product);
   };
 
@@ -44,14 +32,14 @@ export default function SelectItemsPage({ products }) {
       <header className="bg-[#FFFBE7]/95 backdrop-blur-md shadow-sm p-4 flex justify-between items-center sticky top-0 z-10 border-b border-[#E5D8CC]">
         <div className="flex items-center gap-4">
           <ProfileIcon />
-          <img 
-            src="/logo-sifted-house.png" 
-            alt="Sifted House" 
+          <img
+            src="/logo-sifted-house.png"
+            alt="Sifted House"
             className="h-12 md:h-14 w-auto"
           />
         </div>
-        
-        {/* Grup untuk Search Bar dan Keranjang */}
+
+        {/* Search & Cart */}
         <div className="flex items-center gap-4">
           <input
             type="text"
@@ -70,11 +58,11 @@ export default function SelectItemsPage({ products }) {
           </Link>
         </div>
       </header>
-      
+
       <main className="container mx-auto p-4 md:p-8">
         {/* Filter Kategori */}
         <div className="flex justify-center space-x-2 md:space-x-4 mb-8">
-          {categories.map(category => (
+          {categories.map((category) => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
@@ -94,28 +82,38 @@ export default function SelectItemsPage({ products }) {
           {filteredProducts.map((product) => {
             const quantityInCart = getItemQuantity(product._id);
             return (
-              <div key={product._id} className="bg-white rounded-xl shadow-lg overflow-hidden flex transform hover:-translate-y-1 transition-transform duration-300 border border-[#6A6F4C]/30">
+              <div
+                key={product._id}
+                className="bg-white rounded-xl shadow-lg overflow-hidden flex transform hover:-translate-y-1 transition-transform duration-300 border border-[#6A6F4C]/30"
+              >
                 <div className="w-1/3 flex-shrink-0">
-                   <img 
-                     src={product.imageUrl || `https://placehold.co/400x400/6A6F4C/FFFBE7?text=No+Image`} 
-                     alt={product.name} 
-                     className="w-full h-full object-cover"
-                   />
+                  <img
+                    src={
+                      product.imageUrl ||
+                      `https://placehold.co/400x400/6A6F4C/FFFBE7?text=No+Image`
+                    }
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                
+
                 <div className="w-2/3 p-5 flex flex-col">
                   <div>
-                    <h2 className="text-xl font-bold text-[#37432B]">{product.name}</h2>
+                    <h2 className="text-xl font-bold text-[#37432B]">
+                      {product.name}
+                    </h2>
                     <p className="text-lg font-black text-[#682C23] mb-2">
-                        Rp {product.price.toLocaleString('id-ID')}
+                      Rp {product.price.toLocaleString('id-ID')}
                     </p>
                   </div>
-                  
-                  <p className="text-[#6A6F4C] text-sm mb-4 flex-grow">{product.description}</p>
-                  
+
+                  <p className="text-[#6A6F4C] text-sm mb-4 flex-grow">
+                    {product.description}
+                  </p>
+
                   <div className="mt-auto flex justify-end">
                     {quantityInCart === 0 ? (
-                      <button 
+                      <button
                         onClick={() => handleAddToCart(product)}
                         className="bg-[#6A6F4C] text-[#FFFBE7] font-bold py-2 px-5 rounded-full hover:bg-[#37432B] transition-colors focus:outline-none focus:ring-2 focus:ring-[#37432B]"
                       >
@@ -123,15 +121,17 @@ export default function SelectItemsPage({ products }) {
                       </button>
                     ) : (
                       <div className="flex items-center gap-3 bg-[#37432B] text-[#FFFBE7] rounded-full px-3 py-1.5 shadow-md">
-                        <button 
-                          onClick={() => removeFromCart(product)} 
+                        <button
+                          onClick={() => removeFromCart(product)}
                           className="font-bold text-lg focus:outline-none focus:ring-2 focus:ring-[#FFFBE7] rounded"
                         >
                           ➖
                         </button>
-                        <span className="font-bold text-lg w-5 text-center">{quantityInCart}</span>
-                        <button 
-                          onClick={() => addToCart(product)} 
+                        <span className="font-bold text-lg w-5 text-center">
+                          {quantityInCart}
+                        </span>
+                        <button
+                          onClick={() => addToCart(product)}
                           className="font-bold text-lg focus:outline-none focus:ring-2 focus:ring-[#FFFBE7] rounded"
                         >
                           ➕
@@ -146,11 +146,8 @@ export default function SelectItemsPage({ products }) {
         </div>
       </main>
 
-      {/* Login Chooser Modal */}
-      <LoginChooser 
-        show={showLoginChooser} 
-        onClose={() => setShowLoginChooser(false)} 
-      />
+      {/* Dummy LoginChooser (tidak muncul) */}
+      <LoginChooser />
     </div>
   );
 }

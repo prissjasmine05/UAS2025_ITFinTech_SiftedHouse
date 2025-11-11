@@ -1,28 +1,27 @@
+// components/ProfileIcon.jsx
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
-import LoginChooser from './LoginChooser';
 
 export default function ProfileIcon() {
   const router = useRouter();
-  const [showChooser, setShowChooser] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userType, setUserType] = useState(null); // 'user' | 'admin'
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // admin only
   const menuRef = useRef(null);
 
-  useEffect(() => {
-    // Cek status login
+  // Helper aman-SSR
+  const getAdminFromStorage = () => {
+    if (typeof window === 'undefined') return null;
     try {
-      const user = localStorage.getItem('user');
-      const admin = localStorage.getItem('admin');
-      if (admin) {
-        setIsLoggedIn(true);
-        setUserType('admin');
-      } else if (user) {
-        setIsLoggedIn(true);
-        setUserType('user');
-      }
-    } catch (_) {}
+      return localStorage.getItem('admin');
+    } catch {
+      return null;
+    }
+  };
+
+  // Cek status login admin saat mount
+  useEffect(() => {
+    const admin = getAdminFromStorage();
+    if (admin) setIsLoggedIn(true);
   }, []);
 
   // Tutup menu kalau klik di luar
@@ -36,24 +35,48 @@ export default function ProfileIcon() {
     return () => document.removeEventListener('mousedown', onClickOutside);
   }, [showMenu]);
 
+  // Tutup menu saat tekan ESC
+  useEffect(() => {
+    const onKey = (e) => e.key === 'Escape' && setShowMenu(false);
+    if (showMenu) window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [showMenu]);
+
+  // Sinkronisasi status jika login/logout dari tab lain
+  useEffect(() => {
+    const onStorage = (e) => {
+      if (e.key === 'admin') {
+        setIsLoggedIn(!!e.newValue);
+        if (!e.newValue) setShowMenu(false);
+      }
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+
+  // Tutup menu saat berpindah route
+  useEffect(() => {
+    const handleRoute = () => setShowMenu(false);
+    router.events.on('routeChangeStart', handleRoute);
+    return () => router.events.off('routeChangeStart', handleRoute);
+  }, [router.events]);
+
   const handleIconClick = () => {
     if (!isLoggedIn) {
-      // Belum login -> buka chooser
-      setShowChooser(true);
+      // Belum login -> arahkan ke halaman login admin
+      router.push('/admin/login');
       return;
     }
-    // Sudah login -> tampilkan menu akun, JANGAN auto-redirect ke checkout
     setShowMenu((v) => !v);
   };
 
   const gotoAdmin = () => router.push('/admin/dashboard');
-  const gotoProfile = () => router.push('/profile'); // ganti ke halaman akunmu jika berbeda
-  const gotoOrders  = () => router.push('/orders');  // opsional: halaman riwayat pesanan
+
   const doLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('admin');
+    try {
+      localStorage.removeItem('admin');
+    } catch {}
     setIsLoggedIn(false);
-    setUserType(null);
     setShowMenu(false);
     router.push('/select-items');
   };
@@ -62,8 +85,8 @@ export default function ProfileIcon() {
     <div className="relative" ref={menuRef}>
       <button
         onClick={handleIconClick}
-        className="relative bg-zinc-800 text-white p-2 rounded-full hover:bg-zinc-700 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-500"
-        aria-label="Profile menu"
+        className="relative bg-[#6A6F4C] text-[#FFFBE7] p-2 rounded-full hover:bg-[#37432B] transition-colors focus:outline-none focus:ring-2 focus:ring-[#37432B]"
+        aria-label={isLoggedIn ? 'Buka menu admin' : 'Login admin'}
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -71,56 +94,33 @@ export default function ProfileIcon() {
         </svg>
 
         {isLoggedIn && (
-          <span className="absolute -top-1 -right-1 bg-green-500 h-3 w-3 rounded-full border-2 border-white"></span>
+          <span className="absolute -top-1 -right-1 bg-green-500 h-3 w-3 rounded-full border-2 border-[#FFFBE7]" />
         )}
       </button>
 
-      {/* Dropdown menu saat sudah login */}
+      {/* Dropdown menu saat admin sudah login */}
       {isLoggedIn && showMenu && (
-        <div className="absolute left-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-zinc-200 overflow-hidden z-20">
-          <div className="px-4 py-3 border-b">
-            <p className="text-sm text-zinc-500">Signed in as</p>
-            <p className="text-sm font-semibold text-zinc-800 capitalize">{userType}</p>
+        <div className="absolute left-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-[#E5D8CC] overflow-hidden z-20">
+          <div className="px-4 py-3 border-b border-[#E5D8CC]">
+            <p className="text-xs text-[#6A6F4C]">Signed in as</p>
+            <p className="text-sm font-semibold text-[#37432B]">admin</p>
           </div>
 
-          {userType === 'admin' ? (
-            <button
-              onClick={gotoAdmin}
-              className="w-full text-left px-4 py-2.5 hover:bg-zinc-50 text-zinc-700"
-            >
-              Admin Dashboard
-            </button>
-          ) : (
-            <>
-              <button
-                onClick={gotoProfile}
-                className="w-full text-left px-4 py-2.5 hover:bg-zinc-50 text-zinc-700"
-              >
-                Profil Saya
-              </button>
-              <button
-                onClick={gotoOrders}
-                className="w-full text-left px-4 py-2.5 hover:bg-zinc-50 text-zinc-700"
-              >
-                Pesanan Saya
-              </button>
-            </>
-          )}
+          <button
+            onClick={gotoAdmin}
+            className="w-full text-left px-4 py-2.5 hover:bg-[#FFFBE7] text-[#37432B]"
+          >
+            Admin Dashboard
+          </button>
 
           <button
             onClick={doLogout}
-            className="w-full text-left px-4 py-2.5 hover:bg-zinc-50 text-red-600 border-t"
+            className="w-full text-left px-4 py-2.5 hover:bg-[#FFFBE7] text-[#682C23] border-t border-[#E5D8CC]"
           >
             Logout
           </button>
         </div>
       )}
-
-      {/* Chooser saat belum login */}
-      <LoginChooser
-        show={showChooser}
-        onClose={() => setShowChooser(false)}
-      />
     </div>
   );
 }
