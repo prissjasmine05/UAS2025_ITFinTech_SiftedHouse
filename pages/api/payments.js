@@ -66,13 +66,19 @@ export default async function handler(req, res) {
     const externalId = `invoice-uts-${Date.now()}`;
     const normalizedPhone = normalizePhone(customer.phone);
 
+    // ⬅️ FORMAT ITEMS untuk disimpan di MongoDB
+    const items = cart.map(item => ({
+      name: item?.name || 'Item',
+      quantity: Number(item?.quantity || 0),
+      price: Number(item?.price || 0)
+    }));
+
     // ===== 1) Payload ke Xendit (pakai properti camelCase sesuai SDK) =====
     const invoicePayload = {
       externalId,
       amount,
       payerEmail: customer.email,
       description: `Pembayaran oleh ${customer.name || customer.email} untuk pesanan #${externalId}`,
-      // PENTING: biarkan URL konfirmasi yang SUDAH ADA di project-mu
       successRedirectUrl: `${BASE_URL}/success`,
       failureRedirectUrl: `${BASE_URL}/failure`,
       currency: 'IDR',
@@ -93,17 +99,22 @@ export default async function handler(req, res) {
       })),
     };
 
-    // ===== 2) Simpan payment lokal = PENDING =====
+    // ===== 2) Simpan payment lokal = PENDING ⬅️ TAMBAH SEMUA FIELD =====
     const paymentDoc = await Payment.create({
       externalId: invoicePayload.externalId,
       amount: invoicePayload.amount,
       payerEmail: invoicePayload.payerEmail,
       payerName: customer.name || '',
       phone: normalizedPhone,
+      address: customer.address || '', // ⬅️ TAMBAH ADDRESS
       notes: customer.notes || '',
       status: 'PENDING',
       cart,
+      items, // ⬅️ TAMBAH ITEMS UNTUK DITAMPILKAN DI ADMIN
     });
+
+    console.log('✅ Payment created in MongoDB:', paymentDoc._id);
+    console.log('📦 Items saved:', items);
 
     // ===== 3) Buat invoice di Xendit =====
     const invoice = await xenditClient.Invoice.createInvoice({ data: invoicePayload });
@@ -117,6 +128,8 @@ export default async function handler(req, res) {
     // ===== 4) Update invoiceUrl di DB =====
     paymentDoc.invoiceUrl = invoiceUrl;
     await paymentDoc.save();
+
+    console.log('✅ Invoice URL updated:', invoiceUrl);
 
     // ===== 5) (Opsional) Kirim WhatsApp PENDING =====
     // RULE:
@@ -149,7 +162,11 @@ export default async function handler(req, res) {
     }
 
     // ===== 6) Response ke FE =====
-    return res.status(200).json({ invoiceUrl });
+    return res.status(200).json({ 
+      invoiceUrl,
+      externalId,
+      paymentId: paymentDoc._id,
+    });
   } catch (error) {
     console.error('Xendit API Error:', error?.response?.data || error);
     const errorMessage =

@@ -16,11 +16,20 @@ const PaymentSchema = new mongoose.Schema({
   },
   payerName: {
     type: String,
-    required: false,
+    required: true,
   },
   phone: {
     type: String,
-    required: false, 
+    required: true,
+  },
+  address: {
+    type: String,
+    required: true,
+  },
+  notes: {
+    type: String,
+    required: false,
+    default: '',
   },
   status: {
     type: String,
@@ -32,6 +41,22 @@ const PaymentSchema = new mongoose.Schema({
     type: Array,
     required: true,
   },
+  items: [
+    {
+      name: {
+        type: String,
+        required: true,
+      },
+      quantity: {
+        type: Number,
+        required: true,
+      },
+      price: {
+        type: Number,
+        required: true,
+      },
+    }
+  ],
   invoiceUrl: {
     type: String,
     required: false,
