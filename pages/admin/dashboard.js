@@ -351,172 +351,171 @@ export default function AdminDashboard() {
         )}
 
         {/* PRODUCTS TAB */}
-        {activeTab === 'products' && (
-          <div className="min-h-screen">
-            <div className="flex justify-between items-center mb-8">
-              <div>
-                <h2 className="text-3xl font-bold text-zinc-800">Products Management</h2>
-                <p className="text-zinc-600 mt-1">Kelola semua produk di toko Anda</p>
-              </div>
-              <button
-                onClick={() => {
-                  setShowAddProduct(!showAddProduct);
-                  setEditingProduct(null);
-                  setNewProduct({ name: '', price: '', description: '', category: 'Drinks', imageUrl: '' });
-                }}
-                className="px-6 py-3 bg-zinc-800 text-white rounded-full font-semibold hover:bg-zinc-700 transition shadow-lg"
+{activeTab === 'products' && (
+  <div className="min-h-screen">
+    <div className="flex justify-between items-center mb-8">
+      <div>
+        <h2 className="text-3xl font-bold text-[#37432B]">Products Management</h2>
+        <p className="text-[#6A6F4C] mt-1">Kelola semua produk di toko Anda</p>
+      </div>
+      <button
+        onClick={() => {
+          setShowAddProduct(!showAddProduct);
+          setEditingProduct(null);
+          setNewProduct({ name: '', price: '', description: '', category: 'Drinks', imageUrl: '' });
+        }}
+        className="px-6 py-3 bg-[#6A6F4C] text-[#FFFBE7] rounded-full font-semibold hover:bg-[#37432B] transition shadow-lg border border-[#6A6F4C]"
+      >
+        {showAddProduct ? '✕ Cancel' : '+ Add Product'}
+      </button>
+    </div>
+
+    {showAddProduct && (
+      <div className="bg-white rounded-xl shadow-lg p-8 mb-8 border border-[#E5D8CC]">
+        <h3 className="text-2xl font-bold mb-6 text-[#37432B]">
+          {editingProduct ? '✏️ Edit Product' : '➕ Add New Product'}
+        </h3>
+        <form onSubmit={handleAddProduct} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-bold text-[#37432B] mb-2">Product Name *</label>
+              <input
+                type="text"
+                placeholder="Ex: Es Kopi Susu"
+                value={newProduct.name}
+                onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
+                className="w-full px-4 py-3 border border-[#E5D8CC] rounded-lg focus:ring-2 focus:ring-[#37432B] focus:border-transparent transition text-[#682C23] placeholder-[#E5D8CC]"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-[#37432B] mb-2">Price (Rp) *</label>
+              <input
+                type="number"
+                placeholder="22000"
+                value={newProduct.price}
+                onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+                className="w-full px-4 py-3 border border-[#E5D8CC] rounded-lg focus:ring-2 focus:ring-[#37432B] focus:border-transparent transition text-[#682C23] placeholder-[#E5D8CC]"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-[#37432B] mb-2">Category *</label>
+              <select
+                value={newProduct.category}
+                onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
+                className="w-full px-4 py-3 border border-[#E5D8CC] rounded-lg focus:ring-2 focus:ring-[#37432B] focus:border-transparent transition text-[#682C23]"
+                required
               >
-                {showAddProduct ? '✕ Cancel' : '+ Add Product'}
-              </button>
+                <option value="Drinks">Drinks</option>
+                <option value="Additional">Additional</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-[#37432B] mb-2">Image URL</label>
+              <input
+                type="text"
+                placeholder="https://example.com/image.jpg"
+                value={newProduct.imageUrl}
+                onChange={(e) => setNewProduct({ ...newProduct, imageUrl: e.target.value })}
+                className="w-full px-4 py-3 border border-[#E5D8CC] rounded-lg focus:ring-2 focus:ring-[#37432B] focus:border-transparent transition text-[#682C23] placeholder-[#E5D8CC]"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-[#37432B] mb-2">Description *</label>
+            <textarea
+              placeholder="Perpaduan kopi, susu, dan gula aren..."
+              value={newProduct.description}
+              onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
+              className="w-full px-4 py-3 border border-[#E5D8CC] rounded-lg focus:ring-2 focus:ring-[#37432B] focus:border-transparent transition text-[#682C23] placeholder-[#E5D8CC]"
+              rows="3"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-[#6A6F4C] text-[#FFFBE7] py-4 rounded-full font-bold text-lg hover:bg-[#37432B] transition shadow-lg border border-[#6A6F4C]"
+          >
+            {editingProduct ? '💾 Update Product' : '✨ Create Product'}
+          </button>
+        </form>
+      </div>
+    )}
+
+    {loadingProducts ? (
+      <div className="text-center py-20">
+        <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-[#6A6F4C]"></div>
+        <p className="mt-4 text-[#6A6F4C] font-medium">Loading products...</p>
+      </div>
+    ) : products.length > 0 ? (
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        {products.map((product) => (
+          <div
+            key={product._id}
+            className="bg-white rounded-xl shadow-lg overflow-hidden flex transform hover:-translate-y-1 transition-transform duration-300 border border-[#E5D8CC]"
+          >
+            <div className="w-1/3 flex-shrink-0 relative">
+              <img
+                src={product.imageUrl || `https://placehold.co/400x400/FFFBE7/37432B?text=No+Image`}
+                alt={product.name}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute top-2 left-2">
+                <span className="px-2 py-1 bg-[#37432B] text-[#FFFBE7] text-xs font-bold rounded-full">
+                  {product.category}
+                </span>
+              </div>
             </div>
 
-            {showAddProduct && (
-              <div className="bg-white rounded-xl shadow-lg p-8 mb-8 border-2 border-zinc-200">
-                <h3 className="text-2xl font-bold mb-6 text-zinc-800">
-                  {editingProduct ? '✏️ Edit Product' : '➕ Add New Product'}
-                </h3>
-                <form onSubmit={handleAddProduct} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-bold text-zinc-700 mb-2">Product Name *</label>
-                      <input
-                        type="text"
-                        placeholder="Ex: Es Kopi Susu"
-                        value={newProduct.name}
-                        onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-                        className="w-full px-4 py-3 border-2 border-zinc-200 rounded-lg focus:ring-2 focus:ring-zinc-800 focus:border-transparent transition"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-bold text-zinc-700 mb-2">Price (Rp) *</label>
-                      <input
-                        type="number"
-                        placeholder="22000"
-                        value={newProduct.price}
-                        onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
-                        className="w-full px-4 py-3 border-2 border-zinc-200 rounded-lg focus:ring-2 focus:ring-zinc-800 focus:border-transparent transition"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-bold text-zinc-700 mb-2">Category *</label>
-                      <select
-                        value={newProduct.category}
-                        onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
-                        className="w-full px-4 py-3 border-2 border-zinc-200 rounded-lg focus:ring-2 focus:ring-zinc-800 focus:border-transparent transition"
-                        required
-                      >
-                        <option value="Drinks">☕ Drinks</option>
-                        <option value="Snacks">🍪 Snacks</option>
-                        <option value="Bundles">🎁 Bundles</option>
-                        <option value="Other">📦 Other</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-bold text-zinc-700 mb-2">Image URL</label>
-                      <input
-                        type="text"
-                        placeholder="https://example.com/image.jpg"
-                        value={newProduct.imageUrl}
-                        onChange={(e) => setNewProduct({ ...newProduct, imageUrl: e.target.value })}
-                        className="w-full px-4 py-3 border-2 border-zinc-200 rounded-lg focus:ring-2 focus:ring-zinc-800 focus:border-transparent transition"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-zinc-700 mb-2">Description *</label>
-                    <textarea
-                      placeholder="Perpaduan kopi, susu, dan gula aren..."
-                      value={newProduct.description}
-                      onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-zinc-200 rounded-lg focus:ring-2 focus:ring-zinc-800 focus:border-transparent transition"
-                      rows="3"
-                      required
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full bg-zinc-800 text-white py-4 rounded-lg font-bold text-lg hover:bg-zinc-700 transition shadow-lg"
-                  >
-                    {editingProduct ? '💾 Update Product' : '✨ Create Product'}
-                  </button>
-                </form>
+            <div className="w-2/3 p-5 flex flex-col">
+              <div>
+                <h2 className="text-xl font-bold text-[#37432B]">{product.name}</h2>
+                <p className="text-lg font-black text-[#682C23] mb-2">
+                  Rp {product.price.toLocaleString('id-ID')}
+                </p>
               </div>
-            )}
 
-            {loadingProducts ? (
-              <div className="text-center py-20">
-                <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-zinc-800"></div>
-                <p className="mt-4 text-zinc-600 font-medium">Loading products...</p>
-              </div>
-            ) : products.length > 0 ? (
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                {products.map((product) => (
-                  <div
-                    key={product._id}
-                    className="bg-white rounded-xl shadow-lg overflow-hidden flex transform hover:-translate-y-1 transition-transform duration-300"
-                  >
-                    <div className="w-1/3 flex-shrink-0 relative">
-                      <img
-                        src={product.imageUrl || `https://placehold.co/400x400/F5F5DD/4E443A?text=No+Image`}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute top-2 left-2">
-                        <span className="px-2 py-1 bg-zinc-800 text-white text-xs font-bold rounded-full">
-                          {product.category}
-                        </span>
-                      </div>
-                    </div>
+              <p className="text-[#6A6F4C] text-sm mb-4 flex-grow line-clamp-3">
+                {product.description}
+              </p>
 
-                    <div className="w-2/3 p-5 flex flex-col">
-                      <div>
-                        <h2 className="text-xl font-bold text-zinc-800">{product.name}</h2>
-                        <p className="text-lg font-black text-zinc-800 mb-2">
-                          Rp {product.price.toLocaleString('id-ID')}
-                        </p>
-                      </div>
-
-                      <p className="text-zinc-600 text-sm mb-4 flex-grow line-clamp-3">
-                        {product.description}
-                      </p>
-
-                      <div className="mt-auto flex gap-2">
-                        <button
-                          onClick={() => handleEditProduct(product)}
-                          className="flex-1 bg-zinc-700 text-white font-bold py-2 px-4 rounded-full hover:bg-zinc-600 transition-colors shadow-md"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeleteProduct(product._id)}
-                          className="flex-1 bg-red-600 text-white font-bold py-2 px-4 rounded-full hover:bg-red-700 transition-colors shadow-md"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="bg-white rounded-xl shadow-lg p-16 text-center">
-                <svg className="w-32 h-32 mx-auto text-zinc-300 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                </svg>
-                <p className="text-zinc-500 text-2xl font-bold mb-2">No products yet</p>
-                <p className="text-zinc-400 mb-6">Start by adding your first product to the store</p>
+              <div className="mt-auto flex gap-2">
                 <button
-                  onClick={() => setShowAddProduct(true)}
-                  className="px-8 py-3 bg-zinc-800 text-white rounded-full font-bold hover:bg-zinc-700 transition"
+                  onClick={() => handleEditProduct(product)}
+                  className="flex-1 bg-[#6A6F4C] text-[#FFFBE7] font-bold py-2 px-4 rounded-full hover:bg-[#37432B] transition-colors shadow-md border border-[#6A6F4C]"
                 >
-                  + Add First Product
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDeleteProduct(product._id)}
+                  className="flex-1 bg-[#682C23] text-[#FFFBE7] font-bold py-2 px-4 rounded-full hover:opacity-90 transition-colors shadow-md"
+                >
+                  Delete
                 </button>
               </div>
-            )}
+            </div>
           </div>
-        )}
+        ))}
+      </div>
+    ) : (
+      <div className="bg-white rounded-xl shadow-lg p-16 text-center border border-[#E5D8CC]">
+        <svg className="w-32 h-32 mx-auto text-[#E5D8CC] mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+        </svg>
+        <p className="text-[#37432B] text-2xl font-bold mb-2">No products yet</p>
+        <p className="text-[#6A6F4C] mb-6">Start by adding your first product to the store</p>
+        <button
+          onClick={() => setShowAddProduct(true)}
+          className="px-8 py-3 bg-[#6A6F4C] text-[#FFFBE7] rounded-full font-bold hover:bg-[#37432B] transition border border-[#6A6F4C]"
+        >
+          + Add First Product
+        </button>
+      </div>
+    )}
+  </div>
+)}
+
 
         {/* ANALYTICS TAB */}
         {activeTab === 'analytics' && (
