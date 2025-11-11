@@ -39,6 +39,13 @@ const productsToSeed = [
     category: "Drinks",
     imageUrl: "https://i.postimg.cc/DZYKN9ML/earl-grey-bnr-removebg-preview.png"
   },
+  {
+    name: "Additional Oat Milk",
+    price: 5000,
+    description: "please only add this item ONLY IF you want to use Oat Milk on your order.",
+    category: "Additional",
+    imageUrl: "https://oatside.com/wp-content/uploads/2021/09/OAT_Pkg_Web_Barista.jpg"
+  },
 ];
 
 const seedDB = async () => {

@@ -5,17 +5,23 @@ import { useState } from 'react';
 import ProfileIcon from '../components/ProfileIcon';
 import LoginChooser from '../components/LoginChooser'; // tetap diimport biar aman
 
-const categories = ['All', 'Drinks', 'Snacks', 'Bundles'];
+// HANYA 3 kategori yang ditampilkan di UI
+const categories = ['All', 'Drinks', 'Additional'];
 
 export default function SelectItemsPage({ products }) {
   const { cart, addToCart, removeFromCart, getItemQuantity } = useCart();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
 
+  // "All" hanya menampilkan Drinks & Additional
+  const allowedForAll = ['Drinks', 'Additional'];
+
   const filteredProducts = (products || [])
     .filter((product) => {
-      if (selectedCategory === 'All') return true;
-      return product.category === selectedCategory;
+      if (selectedCategory === 'All') {
+        return allowedForAll.includes(product?.category);
+      }
+      return product?.category === selectedCategory;
     })
     .filter((product) =>
       (product?.name || '').toLowerCase().includes(searchTerm.toLowerCase())
