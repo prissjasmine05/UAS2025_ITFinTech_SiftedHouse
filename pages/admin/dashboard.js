@@ -521,262 +521,268 @@ export default function AdminDashboard() {
         {activeTab === 'analytics' && (
           <div className="space-y-6">
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-zinc-800 hover:shadow-lg transition">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-zinc-500 font-medium mb-1">Total Revenue</p>
-                    <h3 className="text-2xl font-bold text-zinc-900">
-                      Rp {(data?.analytics?.totalRevenue || 0).toLocaleString('id-ID')}
-                    </h3>
-                    <p className="text-xs text-green-600 font-semibold mt-1">
-                      ↑ {data?.analytics?.totalOrders || 0} transaksi
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 bg-zinc-100 rounded-full flex items-center justify-center">
-                    <svg className="w-6 h-6 text-zinc-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
+<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+  {/* Total Revenue */}
+  <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-[#37432B] hover:shadow-lg transition">
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="text-sm text-[#6A6F4C] font-medium mb-1">Total Revenue</p>
+        <h3 className="text-2xl font-bold text-[#37432B]">
+          Rp {(data?.analytics?.totalRevenue || 0).toLocaleString('id-ID')}
+        </h3>
+        <p className="text-xs text-[#6A6F4C] font-semibold mt-1">
+          ↑ {data?.analytics?.totalOrders || 0} transaksi
+        </p>
+      </div>
+      <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{backgroundColor:'#37432B1A'}}>
+        <svg className="w-6 h-6" style={{color:'#37432B'}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+    </div>
+  </div>
 
-              <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500 hover:shadow-lg transition">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-zinc-500 font-medium mb-1">Transaksi Sukses</p>
-                    <h3 className="text-2xl font-bold text-zinc-900">
-                      {data?.analytics?.totalOrders || 0}
-                    </h3>
-                    <p className="text-xs text-green-600 font-semibold mt-1">PAID orders</p>
-                  </div>
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                    <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
+  {/* Transaksi Sukses */}
+  <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-[#6A6F4C] hover:shadow-lg transition">
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="text-sm text-[#6A6F4C] font-medium mb-1">Transaksi Sukses</p>
+        <h3 className="text-2xl font-bold text-[#37432B]">
+          {data?.analytics?.totalOrders || 0}
+        </h3>
+        <p className="text-xs text-[#6A6F4C] font-semibold mt-1">PAID orders</p>
+      </div>
+      <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{backgroundColor:'#6A6F4C1A'}}>
+        <svg className="w-6 h-6" style={{color:'#6A6F4C'}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+    </div>
+  </div>
 
-              <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-purple-500 hover:shadow-lg transition">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-zinc-500 font-medium mb-1">Rata-rata Order</p>
-                    <h3 className="text-2xl font-bold text-zinc-900">
-                      Rp {data?.analytics?.totalOrders > 0
-                        ? Math.round(data.analytics.totalRevenue / data.analytics.totalOrders).toLocaleString('id-ID')
-                        : 0}
-                    </h3>
-                    <p className="text-xs text-purple-600 font-semibold mt-1">per transaksi</p>
-                  </div>
-                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                    <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
+  {/* Rata-rata Order */}
+  <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-[#682C23] hover:shadow-lg transition">
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="text-sm text-[#6A6F4C] font-medium mb-1">Rata-rata Order</p>
+        <h3 className="text-2xl font-bold text-[#37432B]">
+          Rp {data?.analytics?.totalOrders > 0
+            ? Math.round(data.analytics.totalRevenue / data.analytics.totalOrders).toLocaleString('id-ID')
+            : 0}
+        </h3>
+        <p className="text-xs font-semibold mt-1" style={{color:'#682C23'}}>per transaksi</p>
+      </div>
+      <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{backgroundColor:'#682C2314'}}>
+        <svg className="w-6 h-6" style={{color:'#682C23'}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+        </svg>
+      </div>
+    </div>
+  </div>
 
-              <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-orange-500 hover:shadow-lg transition">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-zinc-500 font-medium mb-1">Conversion Rate</p>
-                    <h3 className="text-2xl font-bold text-zinc-900">
-                      {data?.payments?.length > 0
-                        ? ((data.analytics.totalOrders / data.payments.length) * 100).toFixed(1)
-                        : 0
-                      }%
-                    </h3>
-                    <p className="text-xs text-orange-600 font-semibold mt-1">
-                      dari {data?.payments?.length || 0} checkout
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                    <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </div>
+  {/* Conversion Rate */}
+  <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-[#9C7A4C] hover:shadow-lg transition">
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="text-sm text-[#6A6F4C] font-medium mb-1">Conversion Rate</p>
+        <h3 className="text-2xl font-bold text-[#37432B]">
+          {data?.payments?.length > 0
+            ? ((data.analytics.totalOrders / data.payments.length) * 100).toFixed(1)
+            : 0
+          }%
+        </h3>
+        <p className="text-xs font-semibold mt-1" style={{color:'#9C7A4C'}}>
+          dari {data?.payments?.length || 0} checkout
+        </p>
+      </div>
+      <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{backgroundColor:'#9C7A4C1A'}}>
+        <svg className="w-6 h-6" style={{color:'#9C7A4C'}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
 
             {/* Daily Revenue Chart (Clean) */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <div className="mb-4">
-                <h3 className="text-lg font-bold text-zinc-800 mb-4">Omset Harian</h3>
+<div className="bg-white rounded-xl shadow-md p-6">
+  <div className="mb-4">
+    <h3 className="text-lg font-bold text-[#37432B] mb-4">Omset Harian</h3>
 
-                <div className="flex flex-wrap gap-3 items-center">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setRevenueView('7days')}
-                      className={`px-4 py-2 text-sm font-semibold rounded-lg transition ${
-                        revenueView === '7days'
-                          ? 'bg-indigo-600 text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      7 Hari Terakhir
-                    </button>
-                    <button
-                      onClick={() => setRevenueView('30days')}
-                      className={`px-4 py-2 text-sm font-semibold rounded-lg transition ${
-                        revenueView === '30days'
-                          ? 'bg-indigo-600 text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      30 Hari Terakhir
-                    </button>
-                    <button
-                      onClick={() => setRevenueView('monthly')}
-                      className={`px-4 py-2 text-sm font-semibold rounded-lg transition ${
-                        revenueView === 'monthly'
-                          ? 'bg-indigo-600 text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                    >
-                      Per Bulan
-                    </button>
-                  </div>
+    <div className="flex flex-wrap gap-3 items-center">
+      <div className="flex gap-2">
+        <button
+          onClick={() => setRevenueView('7days')}
+          className={`px-4 py-2 text-sm font-semibold rounded-lg transition ${
+            revenueView === '7days'
+              ? 'bg-[#37432B] text-[#FFFBE7]'
+              : 'bg-[#E5D8CC] text-[#37432B] hover:bg-[#6A6F4C] hover:text-[#FFFBE7]'
+          }`}
+        >
+          7 Hari Terakhir
+        </button>
+        <button
+          onClick={() => setRevenueView('30days')}
+          className={`px-4 py-2 text-sm font-semibold rounded-lg transition ${
+            revenueView === '30days'
+              ? 'bg-[#37432B] text-[#FFFBE7]'
+              : 'bg-[#E5D8CC] text-[#37432B] hover:bg-[#6A6F4C] hover:text-[#FFFBE7]'
+          }`}
+        >
+          30 Hari Terakhir
+        </button>
+        <button
+          onClick={() => setRevenueView('monthly')}
+          className={`px-4 py-2 text-sm font-semibold rounded-lg transition ${
+            revenueView === 'monthly'
+              ? 'bg-[#37432B] text-[#FFFBE7]'
+              : 'bg-[#E5D8CC] text-[#37432B] hover:bg-[#6A6F4C] hover:text-[#FFFBE7]'
+          }`}
+        >
+          Per Bulan
+        </button>
+      </div>
 
-                  {revenueView === 'monthly' && (
-                    <select
-                      value={selectedMonth}
-                      onChange={(e) => setSelectedMonth(e.target.value)}
-                      className="px-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                      <option value="01">Januari</option>
-                      <option value="02">Februari</option>
-                      <option value="03">Maret</option>
-                      <option value="04">April</option>
-                      <option value="05">Mei</option>
-                      <option value="06">Juni</option>
-                      <option value="07">Juli</option>
-                      <option value="08">Agustus</option>
-                      <option value="09">September</option>
-                      <option value="10">Oktober</option>
-                      <option value="11">November</option>
-                      <option value="12">Desember</option>
-                    </select>
-                  )}
-                </div>
-              </div>
+      {revenueView === 'monthly' && (
+        <select
+          value={selectedMonth}
+          onChange={(e) => setSelectedMonth(e.target.value)}
+          className="px-4 py-2 text-sm border border-[#E5D8CC] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#37432B] text-[#37432B]"
+        >
+          <option value="01">Januari</option>
+          <option value="02">Februari</option>
+          <option value="03">Maret</option>
+          <option value="04">April</option>
+          <option value="05">Mei</option>
+          <option value="06">Juni</option>
+          <option value="07">Juli</option>
+          <option value="08">Agustus</option>
+          <option value="09">September</option>
+          <option value="10">Oktober</option>
+          <option value="11">November</option>
+          <option value="12">Desember</option>
+        </select>
+      )}
+    </div>
+  </div>
 
-              {(() => {
-                let allDates = [];
-                const today = new Date();
+  {(() => {
+    let allDates = [];
+    const today = new Date();
 
-                if (revenueView === '7days') {
-                  for (let i = 6; i >= 0; i--) {
-                    const date = new Date(today);
-                    date.setDate(today.getDate() - i);
-                    allDates.push(date.toISOString().split('T')[0]);
-                  }
-                } else if (revenueView === '30days') {
-                  for (let i = 29; i >= 0; i--) {
-                    const date = new Date(today);
-                    date.setDate(today.getDate() - i);
-                    allDates.push(date.toISOString().split('T')[0]);
-                  }
-                } else if (revenueView === 'monthly') {
-                  const year = today.getFullYear();
-                  const month = parseInt(selectedMonth);
-                  const daysInMonth = new Date(year, month, 0).getDate();
-                  for (let day = 1; day <= daysInMonth; day++) {
-                    const date = new Date(year, month - 1, day);
-                    allDates.push(date.toISOString().split('T')[0]);
-                  }
-                }
+    if (revenueView === '7days') {
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        allDates.push(date.toISOString().split('T')[0]);
+      }
+    } else if (revenueView === '30days') {
+      for (let i = 29; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        allDates.push(date.toISOString().split('T')[0]);
+      }
+    } else if (revenueView === 'monthly') {
+      const year = today.getFullYear();
+      const month = parseInt(selectedMonth);
+      const daysInMonth = new Date(year, month, 0).getDate();
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month - 1, day);
+        allDates.push(date.toISOString().split('T')[0]);
+      }
+    }
 
-                const dataMap = {};
-                (data?.analytics?.dailyRevenue || []).forEach(item => {
-                  dataMap[item._id] = item;
-                });
+    const dataMap = {};
+    (data?.analytics?.dailyRevenue || []).forEach(item => {
+      dataMap[item._id] = item;
+    });
 
-                const completeData = allDates.map(date => ({
-                  date: date,
-                  total: dataMap[date]?.total || 0,
-                  count: dataMap[date]?.count || 0,
-                  displayDate: new Date(date).toLocaleDateString('id-ID', {
-                    day: '2-digit',
-                    month: '2-digit',
-                  })
-                }));
+    const completeData = allDates.map(date => ({
+      date: date,
+      total: dataMap[date]?.total || 0,
+      count: dataMap[date]?.count || 0,
+      displayDate: new Date(date).toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: '2-digit',
+      })
+    }));
 
-                if (completeData.length === 0) {
-                  return (
-                    <div className="h-80 flex items-center justify-center bg-gray-50 rounded-lg">
-                      <div className="text-center text-gray-400">
-                        <svg className="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
-                        <p className="text-sm font-medium">Tidak ada data</p>
-                      </div>
-                    </div>
-                  );
-                }
+    if (completeData.length === 0) {
+      return (
+        <div className="h-80 flex items-center justify-center bg-[#FFFBE7] rounded-lg border border-[#E5D8CC]">
+          <div className="text-center text-[#6A6F4C]">
+            <svg className="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <p className="text-sm font-medium">Tidak ada data</p>
+          </div>
+        </div>
+      );
+    }
 
-                // Custom Tooltip Component
-                const CustomTooltip = ({ active, payload }) => {
-                  if (active && payload && payload.length) {
-                    return (
-                      <div className="bg-white border border-gray-300 rounded-lg py-2 px-3 shadow-lg">
-                        <div className="font-bold mb-1 text-gray-800">
-                          {new Date(payload[0].payload.date).toLocaleDateString('id-ID', {
-                            day: '2-digit',
-                            month: 'short',
-                          })}
-                        </div>
-                        <div className="text-gray-700 font-semibold">
-                          total : {payload[0].value.toLocaleString('id-ID')}
-                        </div>
-                        {payload[0].payload.count > 0 && (
-                          <div className="text-gray-500 text-xs mt-1">
-                            {payload[0].payload.count} transaksi
-                          </div>
-                        )}
-                      </div>
-                    );
-                  }
-                  return null;
-                };
-
-                return (
-                  <div className="w-full" style={{ height: '320px' }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart
-                        data={completeData}
-                        margin={{ top: 10, right: 30, left: 10, bottom: 20 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                        <XAxis
-                          dataKey="displayDate"
-                          tick={{ fontSize: 12, fill: '#6b7280' }}
-                          tickLine={false}
-                          axisLine={{ stroke: '#d1d5db' }}
-                          interval={completeData.length > 15 ? Math.ceil(completeData.length / 8) : 'preserveStartEnd'}
-                        />
-                        <YAxis
-                          tick={{ fontSize: 12, fill: '#6b7280' }}
-                          tickLine={false}
-                          axisLine={{ stroke: '#d1d5db' }}
-                          tickFormatter={(value) => (value / 1000).toFixed(0)}
-                        />
-                        <Tooltip content={<CustomTooltip />} />
-                        <Line
-                          type="monotone"
-                          dataKey="total"
-                          stroke="#8884d8"
-                          strokeWidth={2}
-                          dot={{ fill: '#8884d8', r: 3 }}
-                          activeDot={{ r: 5, fill: '#8884d8' }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                );
-              })()}
+    // Custom Tooltip Component (palette)
+    const CustomTooltip = ({ active, payload }) => {
+      if (active && payload && payload.length) {
+        return (
+          <div className="bg-white border border-[#E5D8CC] rounded-lg py-2 px-3 shadow-lg">
+            <div className="font-bold mb-1 text-[#37432B]">
+              {new Date(payload[0].payload.date).toLocaleDateString('id-ID', {
+                day: '2-digit',
+                month: 'short',
+              })}
             </div>
+            <div className="text-[#37432B] font-semibold">
+              total : {payload[0].value.toLocaleString('id-ID')}
+            </div>
+            {payload[0].payload.count > 0 && (
+              <div className="text-[#6A6F4C] text-xs mt-1">
+                {payload[0].payload.count} transaksi
+              </div>
+            )}
+          </div>
+        );
+      }
+      return null;
+    };
+
+    return (
+      <div className="w-full" style={{ height: '320px' }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart
+            data={completeData}
+            margin={{ top: 10, right: 30, left: 10, bottom: 20 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5D8CC" />
+            <XAxis
+              dataKey="displayDate"
+              tick={{ fontSize: 12, fill: '#6A6F4C' }}
+              tickLine={false}
+              axisLine={{ stroke: '#E5D8CC' }}
+              interval={completeData.length > 15 ? Math.ceil(completeData.length / 8) : 'preserveStartEnd'}
+            />
+            <YAxis
+              tick={{ fontSize: 12, fill: '#6A6F4C' }}
+              tickLine={false}
+              axisLine={{ stroke: '#E5D8CC' }}
+              tickFormatter={(value) => (value / 1000).toFixed(0)}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Line
+              type="monotone"
+              dataKey="total"
+              stroke="#6A6F4C"                // garis utama (olive green)
+              strokeWidth={2}
+              dot={{ fill: '#6A6F4C', r: 3 }} // titik data
+              activeDot={{ r: 5, fill: '#37432B' }} // titik aktif
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    );
+  })()}
+</div>
+
 
             {/* Status Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
