@@ -201,154 +201,231 @@ export default function AdminDashboard() {
         </div>
 
         {/* CHECKOUT TAB */}
-        {activeTab === 'checkout' && (
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-[#E5D8CC]">
-            <div className="p-6 border-b border-[#E5D8CC] bg-[#FFFBE7]">
-              <div className="flex justify-between items-center mb-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-[#37432B]">📦 Checkout List</h2>
-                  <p className="text-sm text-[#6A6F4C] mt-1">Daftar semua transaksi checkout</p>
-                </div>
-              </div>
+{activeTab === 'checkout' && (
+  <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-[#E5D8CC]">
+    <div className="p-6 border-b border-[#E5D8CC] bg-[#FFFBE7]">
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h2 className="text-2xl font-bold text-[#37432B]">📦 Checkout List</h2>
+          <p className="text-sm text-[#6A6F4C] mt-1">Daftar semua transaksi checkout</p>
+        </div>
+      </div>
 
-              {/* Filters */}
-              <div className="flex flex-wrap gap-4 items-end">
-                <div>
-                  <label className="block text-sm font-medium text-[#37432B] mb-2">Filter Status</label>
-                  <select
-                    value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
-                    className="px-4 py-2 border-2 border-[#6A6F4C]/40 rounded-full bg-white text-[#37432B] focus:ring-2 focus:ring-[#6A6F4C] focus:border-transparent"
-                  >
-                    <option value="All">All Status</option>
-                    <option value="PAID">PAID</option>
-                    <option value="PENDING">PENDING</option>
-                    <option value="FAILED">FAILED</option>
-                    <option value="EXPIRED">EXPIRED</option>
-                  </select>
-                </div>
+      {/* Filters */}
+      <div className="flex flex-wrap gap-4 items-end">
+        <div>
+          <label className="block text-sm font-medium text-[#37432B] mb-2">Filter Status</label>
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="px-4 py-2 border-2 border-[#6A6F4C]/40 rounded-full bg-white text-[#37432B] focus:ring-2 focus:ring-[#6A6F4C] focus:border-transparent"
+          >
+            <option value="All">All Status</option>
+            <option value="PAID">PAID</option>
+            <option value="PENDING">PENDING</option>
+            <option value="FAILED">FAILED</option>
+            <option value="EXPIRED">EXPIRED</option>
+          </select>
+        </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-[#37432B] mb-2">Start Date</label>
-                  <input
-                    type="date"
-                    value={dateRange.start}
-                    onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-                    className="px-4 py-2 border-2 border-[#6A6F4C]/40 rounded-full bg-white text-[#37432B] focus:ring-2 focus:ring-[#6A6F4C] focus:border-transparent"
-                  />
-                </div>
+        <div>
+          <label className="block text-sm font-medium text-[#37432B] mb-2">Start Date</label>
+          <input
+            type="date"
+            value={dateRange.start}
+            onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
+            className="px-4 py-2 border-2 border-[#6A6F4C]/40 rounded-full bg-white text-[#37432B] focus:ring-2 focus:ring-[#6A6F4C] focus:border-transparent"
+          />
+        </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-[#37432B] mb-2">End Date</label>
-                  <input
-                    type="date"
-                    value={dateRange.end}
-                    onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-                    className="px-4 py-2 border-2 border-[#6A6F4C]/40 rounded-full bg-white text-[#37432B] focus:ring-2 focus:ring-[#6A6F4C] focus:border-transparent"
-                  />
-                </div>
+        <div>
+          <label className="block text-sm font-medium text-[#37432B] mb-2">End Date</label>
+          <input
+            type="date"
+            value={dateRange.end}
+            onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
+            className="px-4 py-2 border-2 border-[#6A6F4C]/40 rounded-full bg-white text-[#37432B] focus:ring-2 focus:ring-[#6A6F4C] focus:border-transparent"
+          />
+        </div>
 
-                {(filterStatus !== 'All' || dateRange.start || dateRange.end) && (
-                  <button
-                    onClick={() => {
-                      setFilterStatus('All');
-                      setDateRange({ start: '', end: '' });
-                    }}
-                    className="px-4 py-2 bg-[#6A6F4C]/20 text-[#37432B] rounded-full hover:bg-[#6A6F4C]/30 transition font-medium border border-[#6A6F4C]/30"
-                  >
-                    Reset Filters
-                  </button>
-                )}
-              </div>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-[#E5D8CC]/40 border-b border-[#E5D8CC]">
-                  <tr>
-                    <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider">Order ID</th>
-                    <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider">Customer</th>
-                    <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider">Amount</th>
-                    <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider">Status</th>
-                    <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider">Date</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#E5D8CC]">
-                  {data?.payments
-                    ?.filter((payment) => {
-                      if (filterStatus !== 'All' && payment.status !== filterStatus) return false;
-                      if (dateRange.start || dateRange.end) {
-                        const paymentDate = new Date(payment.createdAt);
-                        const startDate = dateRange.start ? new Date(dateRange.start) : null;
-                        const endDate = dateRange.end ? new Date(dateRange.end + 'T23:59:59') : null;
-                        if (startDate && paymentDate < startDate) return false;
-                        if (endDate && paymentDate > endDate) return false;
-                      }
-                      return true;
-                    })
-                    .map((payment) => (
-                      <tr key={payment._id} className="transition bg-white hover:bg-[#E5D8CC]/30">
-                        <td className="py-4 px-6">
-                          <span className="font-mono text-sm font-medium text-[#37432B]">{payment.externalId}</span>
-                        </td>
-                        <td className="py-4 px-6">
-                          <div className="flex items-center">
-                            <div className="w-8 h-8 bg-[#6A6F4C] rounded-full flex items-center justify-center text-[#FFFBE7] font-bold text-xs mr-3">
-                              {payment.payerEmail.charAt(0).toUpperCase()}
-                            </div>
-                            <span className="text-sm text-[#37432B]">{payment.payerEmail}</span>
-                          </div>
-                        </td>
-                        <td className="py-4 px-6">
-                          <span className="text-base font-bold text-[#37432B]">
-                            Rp {payment.amount.toLocaleString('id-ID')}
-                          </span>
-                        </td>
-                        <td className="py-4 px-6">
-                          <span
-                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${
-                              payment.status === 'PAID'
-                                ? 'bg-[#6A6F4C]/20 text-[#37432B] border-[#6A6F4C]/40'
-                                : payment.status === 'PENDING'
-                                ? 'bg-[#E5D8CC]/50 text-[#6A6F4C] border-[#6A6F4C]/30'
-                                : 'bg-[#682C23]/20 text-[#682C23] border-[#682C23]/40'
-                            }`}
-                          >
-                            {payment.status}
-                          </span>
-                        </td>
-                        <td className="py-4 px-6 text-sm text-[#6A6F4C]">
-                          {new Date(payment.createdAt).toLocaleDateString('id-ID', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric',
-                          })}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="p-4 bg-zinc-50 border-t flex justify-between items-center">
-              <span className="text-sm text-zinc-600">
-                Showing{' '}
-                {data?.payments?.filter((payment) => {
-                  if (filterStatus !== 'All' && payment.status !== filterStatus) return false;
-                  if (dateRange.start || dateRange.end) {
-                    const paymentDate = new Date(payment.createdAt);
-                    const startDate = dateRange.start ? new Date(dateRange.start) : null;
-                    const endDate = dateRange.end ? new Date(dateRange.end + 'T23:59:59') : null;
-                    if (startDate && paymentDate < startDate) return false;
-                    if (endDate && paymentDate > endDate) return false;
-                  }
-                  return true;
-                }).length || 0}{' '}
-                of {data?.payments?.length || 0} transactions
-              </span>
-            </div>
-          </div>
+        {(filterStatus !== 'All' || dateRange.start || dateRange.end) && (
+          <button
+            onClick={() => {
+              setFilterStatus('All');
+              setDateRange({ start: '', end: '' });
+            }}
+            className="px-4 py-2 bg-[#6A6F4C]/20 text-[#37432B] rounded-full hover:bg-[#6A6F4C]/30 transition font-medium border border-[#6A6F4C]/30"
+          >
+            Reset Filters
+          </button>
         )}
+      </div>
+    </div>
+
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[1400px]">
+        <thead className="bg-[#E5D8CC]/40 border-b border-[#E5D8CC]">
+          <tr>
+            <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider w-[180px]">
+              Order ID
+            </th>
+            <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider w-[220px]">
+              Customer
+            </th>
+            <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider w-[240px]">
+              Order
+            </th>
+            <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider w-[200px]">
+              Address
+            </th>
+            <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider w-[180px]">
+              Notes
+            </th>
+            <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider w-[130px]">
+              Amount
+            </th>
+            <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider w-[120px]">
+              Status
+            </th>
+            <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider w-[130px]">
+              Date
+            </th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-[#E5D8CC]">
+          {data?.payments
+            ?.filter((payment) => {
+              if (filterStatus !== 'All' && payment.status !== filterStatus) return false;
+              if (dateRange.start || dateRange.end) {
+                const paymentDate = new Date(payment.createdAt);
+                const startDate = dateRange.start ? new Date(dateRange.start) : null;
+                const endDate = dateRange.end ? new Date(dateRange.end + 'T23:59:59') : null;
+                if (startDate && paymentDate < startDate) return false;
+                if (endDate && paymentDate > endDate) return false;
+              }
+              return true;
+            })
+            .map((payment) => (
+              <tr key={payment._id} className="transition bg-white hover:bg-[#E5D8CC]/30">
+                {/* Order ID */}
+                <td className="py-5 px-6">
+                  <span className="font-mono text-sm font-semibold text-[#37432B]">
+                    {payment.externalId}
+                  </span>
+                </td>
+
+                {/* Customer - Nama Lengkap */}
+                <td className="py-5 px-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-[#6A6F4C] rounded-full flex items-center justify-center text-[#FFFBE7] font-bold text-sm flex-shrink-0">
+                      {payment.payerName ? payment.payerName.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-sm font-bold text-[#37432B] truncate">
+                        {payment.payerName || 'Unknown'}
+                      </div>
+                      <div className="text-xs text-[#6A6F4C] truncate">
+                        {payment.payerEmail}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                {/* Order - Items yang dipesan */}
+                <td className="py-5 px-6">
+                  <div className="text-sm text-[#37432B] space-y-1.5">
+                    {payment.items && payment.items.length > 0 ? (
+                      payment.items.map((item, index) => (
+                        <div key={index} className="flex items-start gap-2">
+                          <span className="font-bold text-[#682C23] text-base min-w-[35px]">
+                            {item.quantity}x
+                          </span>
+                          <span className="flex-1">{item.name}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <span className="text-[#6A6F4C] italic">No items</span>
+                    )}
+                  </div>
+                </td>
+
+                {/* Address */}
+                <td className="py-5 px-6">
+                  <div className="text-sm text-[#37432B]">
+                    <span className="line-clamp-3">
+                      {payment.address || '-'}
+                    </span>
+                  </div>
+                </td>
+
+                {/* Notes */}
+                <td className="py-5 px-6">
+                  <div className="text-sm">
+                    {payment.notes ? (
+                      <span className="line-clamp-2 italic text-[#6A6F4C]">
+                        "{payment.notes}"
+                      </span>
+                    ) : (
+                      <span className="text-[#6A6F4C]">-</span>
+                    )}
+                  </div>
+                </td>
+
+                {/* Amount */}
+                <td className="py-5 px-6">
+                  <span className="text-base font-bold text-[#682C23] whitespace-nowrap">
+                    Rp {payment.amount.toLocaleString('id-ID')}
+                  </span>
+                </td>
+
+                {/* Status */}
+                <td className="py-5 px-6">
+                  <span
+                    className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold border whitespace-nowrap ${
+                      payment.status === 'PAID'
+                        ? 'bg-[#6A6F4C]/20 text-[#37432B] border-[#6A6F4C]/40'
+                        : payment.status === 'PENDING'
+                        ? 'bg-[#E5D8CC]/50 text-[#6A6F4C] border-[#6A6F4C]/30'
+                        : 'bg-[#682C23]/20 text-[#682C23] border-[#682C23]/40'
+                    }`}
+                  >
+                    {payment.status}
+                  </span>
+                </td>
+
+                {/* Date */}
+                <td className="py-5 px-6 text-sm text-[#6A6F4C] whitespace-nowrap">
+                  {new Date(payment.createdAt).toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+    </div>
+
+    <div className="p-4 bg-zinc-50 border-t flex justify-between items-center">
+      <span className="text-sm text-zinc-600">
+        Showing{' '}
+        {data?.payments?.filter((payment) => {
+          if (filterStatus !== 'All' && payment.status !== filterStatus) return false;
+          if (dateRange.start || dateRange.end) {
+            const paymentDate = new Date(payment.createdAt);
+            const startDate = dateRange.start ? new Date(dateRange.start) : null;
+            const endDate = dateRange.end ? new Date(dateRange.end + 'T23:59:59') : null;
+            if (startDate && paymentDate < startDate) return false;
+            if (endDate && paymentDate > endDate) return false;
+          }
+          return true;
+        }).length || 0}{' '}
+        of {data?.payments?.length || 0} transactions
+      </span>
+    </div>
+  </div>
+)}
 
         {/* PRODUCTS TAB */}
 {activeTab === 'products' && (
