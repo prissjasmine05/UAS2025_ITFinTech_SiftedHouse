@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function AdminDashboard() {
   const [filterStatus, setFilterStatus] = useState('All');
@@ -11,6 +12,11 @@ export default function AdminDashboard() {
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [products, setProducts] = useState([]);
+  const [revenueView, setRevenueView] = useState('7days');
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    const today = new Date();
+    return String(today.getMonth() + 1).padStart(2, '0');
+  });
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [newProduct, setNewProduct] = useState({
     name: '',
@@ -20,14 +26,12 @@ export default function AdminDashboard() {
     imageUrl: '',
   });
 
-  // FUNCTIONS - Definisikan SEBELUM useEffect
+  // FUNCTIONS
   const fetchDashboardData = async () => {
     try {
       const response = await fetch('/api/admin/dashboard');
       const result = await response.json();
-      if (result.success) {
-        setData(result.data);
-      }
+      if (result.success) setData(result.data);
     } catch (error) {
       console.error('Error fetching dashboard:', error);
     } finally {
@@ -54,8 +58,7 @@ export default function AdminDashboard() {
     e.preventDefault();
     try {
       const method = editingProduct ? 'PUT' : 'POST';
-      
-      const body = editingProduct 
+      const body = editingProduct
         ? { id: editingProduct._id, ...newProduct, price: parseFloat(newProduct.price) }
         : { ...newProduct, price: parseFloat(newProduct.price) };
 
@@ -99,10 +102,7 @@ export default function AdminDashboard() {
     if (!confirm('Yakin ingin menghapus product ini?')) return;
 
     try {
-      const response = await fetch(`/api/products?id=${id}`, {
-        method: 'DELETE',
-      });
-
+      const response = await fetch(`/api/products?id=${id}`, { method: 'DELETE' });
       if (response.ok) {
         alert('Product berhasil dihapus!');
         fetchProducts();
@@ -122,14 +122,13 @@ export default function AdminDashboard() {
     router.push('/admin/login');
   };
 
-  // useEffect - Panggil setelah functions didefinisikan
+  // EFFECTS
   useEffect(() => {
     const admin = localStorage.getItem('admin');
     if (!admin) {
       router.push('/admin/login');
       return;
     }
-
     fetchDashboardData();
     fetchProducts();
   }, []);
@@ -150,28 +149,24 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-[#F5F5DD]">
-      {/* Header - Sifted House Theme */}
+      {/* Header */}
       <div className="bg-[#FFFBE7]/90 backdrop-blur-md shadow-sm border-b border-[#E5D8CC] sticky top-0 z-10">
-      <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-      <div className="flex items-center gap-3">
-      <img
-        src="/logo-sifted-house.png"
-        alt="Sifted House Logo"
-        className="h-10 w-auto"
-      />
-      <h1 className="text-2xl font-bold text-[#37432B]">Admin Dashboard</h1>
-    </div>
-    <button
-      onClick={handleLogout}
-      className="px-5 py-2 bg-[#682C23] text-[#FFFBE7] rounded-full font-semibold hover:bg-[#37432B] transition-colors shadow-md"
-    >
-      Logout
-    </button>
-  </div>
-</div>
+        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <img src="/logo-sifted-house.png" alt="Sifted House Logo" className="h-10 w-auto" />
+            <h1 className="text-2xl font-bold text-[#37432B]">Admin Dashboard</h1>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="px-5 py-2 bg-[#682C23] text-[#FFFBE7] rounded-full font-semibold hover:bg-[#37432B] transition-colors shadow-md"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Tabs - Matching homepage button style */}
+        {/* Tabs */}
         <div className="flex justify-center space-x-4 mb-8">
           <button
             onClick={() => setActiveTab('checkout')}
@@ -205,148 +200,140 @@ export default function AdminDashboard() {
           </button>
         </div>
 
-{/* CHECKOUT TAB */}
-{activeTab === 'checkout' && (
-  <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-[#E5D8CC]">
-    <div className="p-6 border-b border-[#E5D8CC] bg-[#FFFBE7]">
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <h2 className="text-2xl font-bold text-[#37432B]">📦 Checkout List</h2>
-          <p className="text-sm text-[#6A6F4C] mt-1">Daftar semua transaksi checkout</p>
-        </div>
-      </div>
+        {/* CHECKOUT TAB */}
+        {activeTab === 'checkout' && (
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-[#E5D8CC]">
+            <div className="p-6 border-b border-[#E5D8CC] bg-[#FFFBE7]">
+              <div className="flex justify-between items-center mb-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-[#37432B]">📦 Checkout List</h2>
+                  <p className="text-sm text-[#6A6F4C] mt-1">Daftar semua transaksi checkout</p>
+                </div>
+              </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-4 items-end">
-        {/* Status Filter */}
-        <div>
-          <label className="block text-sm font-medium text-[#37432B] mb-2">Filter Status</label>
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-4 py-2 border-2 border-[#6A6F4C]/40 rounded-full bg-white text-[#37432B] focus:ring-2 focus:ring-[#6A6F4C] focus:border-transparent"
-          >
-            <option value="All">All Status</option>
-            <option value="PAID">PAID</option>
-            <option value="PENDING">PENDING</option>
-            <option value="FAILED">FAILED</option>
-            <option value="EXPIRED">EXPIRED</option>
-          </select>
-        </div>
-
-        {/* Date Range Filter */}
-        <div>
-          <label className="block text-sm font-medium text-[#37432B] mb-2">Start Date</label>
-          <input
-            type="date"
-            value={dateRange.start}
-            onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-            className="px-4 py-2 border-2 border-[#6A6F4C]/40 rounded-full bg-white text-[#37432B] focus:ring-2 focus:ring-[#6A6F4C] focus:border-transparent"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-[#37432B] mb-2">End Date</label>
-          <input
-            type="date"
-            value={dateRange.end}
-            onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-            className="px-4 py-2 border-2 border-[#6A6F4C]/40 rounded-full bg-white text-[#37432B] focus:ring-2 focus:ring-[#6A6F4C] focus:border-transparent"
-          />
-        </div>
-
-        {/* Reset Button */}
-        {(filterStatus !== 'All' || dateRange.start || dateRange.end) && (
-          <button
-            onClick={() => {
-              setFilterStatus('All');
-              setDateRange({ start: '', end: '' });
-            }}
-            className="px-4 py-2 bg-[#6A6F4C]/20 text-[#37432B] rounded-full hover:bg-[#6A6F4C]/30 transition font-medium border border-[#6A6F4C]/30"
-          >
-            Reset Filters
-          </button>
-        )}
-      </div>
-    </div>
-
-    <div className="overflow-x-auto">
-      <table className="w-full">
-        <thead className="bg-[#E5D8CC]/40 border-b border-[#E5D8CC]">
-          <tr>
-            <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider">Order ID</th>
-            <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider">Customer</th>
-            <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider">Amount</th>
-            <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider">Status</th>
-            <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider">Date</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-[#E5D8CC]">
-          {data?.payments
-            ?.filter((payment) => {
-              if (filterStatus !== 'All' && payment.status !== filterStatus) return false;
-              if (dateRange.start || dateRange.end) {
-                const paymentDate = new Date(payment.createdAt);
-                const startDate = dateRange.start ? new Date(dateRange.start) : null;
-                const endDate = dateRange.end ? new Date(dateRange.end + 'T23:59:59') : null;
-                if (startDate && paymentDate < startDate) return false;
-                if (endDate && paymentDate > endDate) return false;
-              }
-              return true;
-            })
-            .map((payment, index) => (
-              <tr
-                key={payment._id}
-                className="transition bg-white hover:bg-[#E5D8CC]/30"
-              >
-                <td className="py-4 px-6">
-                  <span className="font-mono text-sm font-medium text-[#37432B]">
-                    {payment.externalId}
-                  </span>
-                </td>
-                <td className="py-4 px-6">
-                  <div className="flex items-center">
-                    <div className="w-8 h-8 bg-[#6A6F4C] rounded-full flex items-center justify-center text-[#FFFBE7] font-bold text-xs mr-3">
-                      {payment.payerEmail.charAt(0).toUpperCase()}
-                    </div>
-                    <span className="text-sm text-[#37432B]">{payment.payerEmail}</span>
-                  </div>
-                </td>
-                <td className="py-4 px-6">
-                  <span className="text-base font-bold text-[#37432B]">
-                    Rp {payment.amount.toLocaleString('id-ID')}
-                  </span>
-                </td>
-                <td className="py-4 px-6">
-                  <span
-                    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${
-                      payment.status === 'PAID'
-                        ? 'bg-[#6A6F4C]/20 text-[#37432B] border-[#6A6F4C]/40'
-                        : payment.status === 'PENDING'
-                        ? 'bg-[#E5D8CC]/50 text-[#6A6F4C] border-[#6A6F4C]/30'
-                        : 'bg-[#682C23]/20 text-[#682C23] border-[#682C23]/40'
-                    }`}
+              {/* Filters */}
+              <div className="flex flex-wrap gap-4 items-end">
+                <div>
+                  <label className="block text-sm font-medium text-[#37432B] mb-2">Filter Status</label>
+                  <select
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                    className="px-4 py-2 border-2 border-[#6A6F4C]/40 rounded-full bg-white text-[#37432B] focus:ring-2 focus:ring-[#6A6F4C] focus:border-transparent"
                   >
-                    {payment.status}
-                  </span>
-                </td>
-                <td className="py-4 px-6 text-sm text-[#6A6F4C]">
-                  {new Date(payment.createdAt).toLocaleDateString('id-ID', {
-                    day: 'numeric',
-                    month: 'short',
-                    year: 'numeric',
-                  })}
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
-    </div>
-            
-            {/* Footer Summary */}
+                    <option value="All">All Status</option>
+                    <option value="PAID">PAID</option>
+                    <option value="PENDING">PENDING</option>
+                    <option value="FAILED">FAILED</option>
+                    <option value="EXPIRED">EXPIRED</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-[#37432B] mb-2">Start Date</label>
+                  <input
+                    type="date"
+                    value={dateRange.start}
+                    onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
+                    className="px-4 py-2 border-2 border-[#6A6F4C]/40 rounded-full bg-white text-[#37432B] focus:ring-2 focus:ring-[#6A6F4C] focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-[#37432B] mb-2">End Date</label>
+                  <input
+                    type="date"
+                    value={dateRange.end}
+                    onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
+                    className="px-4 py-2 border-2 border-[#6A6F4C]/40 rounded-full bg-white text-[#37432B] focus:ring-2 focus:ring-[#6A6F4C] focus:border-transparent"
+                  />
+                </div>
+
+                {(filterStatus !== 'All' || dateRange.start || dateRange.end) && (
+                  <button
+                    onClick={() => {
+                      setFilterStatus('All');
+                      setDateRange({ start: '', end: '' });
+                    }}
+                    className="px-4 py-2 bg-[#6A6F4C]/20 text-[#37432B] rounded-full hover:bg-[#6A6F4C]/30 transition font-medium border border-[#6A6F4C]/30"
+                  >
+                    Reset Filters
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-[#E5D8CC]/40 border-b border-[#E5D8CC]">
+                  <tr>
+                    <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider">Order ID</th>
+                    <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider">Customer</th>
+                    <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider">Amount</th>
+                    <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider">Status</th>
+                    <th className="text-left py-4 px-6 text-xs font-bold text-[#37432B] uppercase tracking-wider">Date</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#E5D8CC]">
+                  {data?.payments
+                    ?.filter((payment) => {
+                      if (filterStatus !== 'All' && payment.status !== filterStatus) return false;
+                      if (dateRange.start || dateRange.end) {
+                        const paymentDate = new Date(payment.createdAt);
+                        const startDate = dateRange.start ? new Date(dateRange.start) : null;
+                        const endDate = dateRange.end ? new Date(dateRange.end + 'T23:59:59') : null;
+                        if (startDate && paymentDate < startDate) return false;
+                        if (endDate && paymentDate > endDate) return false;
+                      }
+                      return true;
+                    })
+                    .map((payment) => (
+                      <tr key={payment._id} className="transition bg-white hover:bg-[#E5D8CC]/30">
+                        <td className="py-4 px-6">
+                          <span className="font-mono text-sm font-medium text-[#37432B]">{payment.externalId}</span>
+                        </td>
+                        <td className="py-4 px-6">
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 bg-[#6A6F4C] rounded-full flex items-center justify-center text-[#FFFBE7] font-bold text-xs mr-3">
+                              {payment.payerEmail.charAt(0).toUpperCase()}
+                            </div>
+                            <span className="text-sm text-[#37432B]">{payment.payerEmail}</span>
+                          </div>
+                        </td>
+                        <td className="py-4 px-6">
+                          <span className="text-base font-bold text-[#37432B]">
+                            Rp {payment.amount.toLocaleString('id-ID')}
+                          </span>
+                        </td>
+                        <td className="py-4 px-6">
+                          <span
+                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${
+                              payment.status === 'PAID'
+                                ? 'bg-[#6A6F4C]/20 text-[#37432B] border-[#6A6F4C]/40'
+                                : payment.status === 'PENDING'
+                                ? 'bg-[#E5D8CC]/50 text-[#6A6F4C] border-[#6A6F4C]/30'
+                                : 'bg-[#682C23]/20 text-[#682C23] border-[#682C23]/40'
+                            }`}
+                          >
+                            {payment.status}
+                          </span>
+                        </td>
+                        <td className="py-4 px-6 text-sm text-[#6A6F4C]">
+                          {new Date(payment.createdAt).toLocaleDateString('id-ID', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric',
+                          })}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+
             <div className="p-4 bg-zinc-50 border-t flex justify-between items-center">
               <span className="text-sm text-zinc-600">
-                Showing {data?.payments?.filter((payment) => {
+                Showing{' '}
+                {data?.payments?.filter((payment) => {
                   if (filterStatus !== 'All' && payment.status !== filterStatus) return false;
                   if (dateRange.start || dateRange.end) {
                     const paymentDate = new Date(payment.createdAt);
@@ -356,7 +343,8 @@ export default function AdminDashboard() {
                     if (endDate && paymentDate > endDate) return false;
                   }
                   return true;
-                }).length || 0} of {data?.payments?.length || 0} transactions
+                }).length || 0}{' '}
+                of {data?.payments?.length || 0} transactions
               </span>
             </div>
           </div>
@@ -382,7 +370,6 @@ export default function AdminDashboard() {
               </button>
             </div>
 
-            {/* Add/Edit Product Form */}
             {showAddProduct && (
               <div className="bg-white rounded-xl shadow-lg p-8 mb-8 border-2 border-zinc-200">
                 <h3 className="text-2xl font-bold mb-6 text-zinc-800">
@@ -391,9 +378,7 @@ export default function AdminDashboard() {
                 <form onSubmit={handleAddProduct} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-bold text-zinc-700 mb-2">
-                        Product Name *
-                      </label>
+                      <label className="block text-sm font-bold text-zinc-700 mb-2">Product Name *</label>
                       <input
                         type="text"
                         placeholder="Ex: Es Kopi Susu"
@@ -404,9 +389,7 @@ export default function AdminDashboard() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-bold text-zinc-700 mb-2">
-                        Price (Rp) *
-                      </label>
+                      <label className="block text-sm font-bold text-zinc-700 mb-2">Price (Rp) *</label>
                       <input
                         type="number"
                         placeholder="22000"
@@ -417,9 +400,7 @@ export default function AdminDashboard() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-bold text-zinc-700 mb-2">
-                        Category *
-                      </label>
+                      <label className="block text-sm font-bold text-zinc-700 mb-2">Category *</label>
                       <select
                         value={newProduct.category}
                         onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
@@ -433,9 +414,7 @@ export default function AdminDashboard() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-bold text-zinc-700 mb-2">
-                        Image URL
-                      </label>
+                      <label className="block text-sm font-bold text-zinc-700 mb-2">Image URL</label>
                       <input
                         type="text"
                         placeholder="https://example.com/image.jpg"
@@ -446,9 +425,7 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-bold text-zinc-700 mb-2">
-                      Description *
-                    </label>
+                    <label className="block text-sm font-bold text-zinc-700 mb-2">Description *</label>
                     <textarea
                       placeholder="Perpaduan kopi, susu, dan gula aren..."
                       value={newProduct.description}
@@ -468,7 +445,6 @@ export default function AdminDashboard() {
               </div>
             )}
 
-            {/* Products Grid - Style sama dengan select-items */}
             {loadingProducts ? (
               <div className="text-center py-20">
                 <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-zinc-800"></div>
@@ -477,23 +453,23 @@ export default function AdminDashboard() {
             ) : products.length > 0 ? (
               <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 {products.map((product) => (
-                  <div key={product._id} className="bg-white rounded-xl shadow-lg overflow-hidden flex transform hover:-translate-y-1 transition-transform duration-300">
-                    {/* Product Image - 1/3 width */}
+                  <div
+                    key={product._id}
+                    className="bg-white rounded-xl shadow-lg overflow-hidden flex transform hover:-translate-y-1 transition-transform duration-300"
+                  >
                     <div className="w-1/3 flex-shrink-0 relative">
-                      <img 
-                        src={product.imageUrl || `https://placehold.co/400x400/F5F5DD/4E443A?text=No+Image`} 
-                        alt={product.name} 
+                      <img
+                        src={product.imageUrl || `https://placehold.co/400x400/F5F5DD/4E443A?text=No+Image`}
+                        alt={product.name}
                         className="w-full h-full object-cover"
                       />
-                      {/* Category Badge */}
                       <div className="absolute top-2 left-2">
                         <span className="px-2 py-1 bg-zinc-800 text-white text-xs font-bold rounded-full">
                           {product.category}
                         </span>
                       </div>
                     </div>
-                    
-                    {/* Product Info - 2/3 width */}
+
                     <div className="w-2/3 p-5 flex flex-col">
                       <div>
                         <h2 className="text-xl font-bold text-zinc-800">{product.name}</h2>
@@ -501,10 +477,11 @@ export default function AdminDashboard() {
                           Rp {product.price.toLocaleString('id-ID')}
                         </p>
                       </div>
-                      
-                      <p className="text-zinc-600 text-sm mb-4 flex-grow line-clamp-3">{product.description}</p>
-                      
-                      {/* Action Buttons */}
+
+                      <p className="text-zinc-600 text-sm mb-4 flex-grow line-clamp-3">
+                        {product.description}
+                      </p>
+
                       <div className="mt-auto flex gap-2">
                         <button
                           onClick={() => handleEditProduct(product)}
@@ -544,7 +521,7 @@ export default function AdminDashboard() {
         {/* ANALYTICS TAB */}
         {activeTab === 'analytics' && (
           <div className="space-y-6">
-            {/* Top Summary Cards */}
+            {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-zinc-800 hover:shadow-lg transition">
                 <div className="flex items-center justify-between">
@@ -572,9 +549,7 @@ export default function AdminDashboard() {
                     <h3 className="text-2xl font-bold text-zinc-900">
                       {data?.analytics?.totalOrders || 0}
                     </h3>
-                    <p className="text-xs text-green-600 font-semibold mt-1">
-                      PAID orders
-                    </p>
+                    <p className="text-xs text-green-600 font-semibold mt-1">PAID orders</p>
                   </div>
                   <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                     <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -589,14 +564,11 @@ export default function AdminDashboard() {
                   <div>
                     <p className="text-sm text-zinc-500 font-medium mb-1">Rata-rata Order</p>
                     <h3 className="text-2xl font-bold text-zinc-900">
-                      Rp {data?.analytics?.totalOrders > 0 
+                      Rp {data?.analytics?.totalOrders > 0
                         ? Math.round(data.analytics.totalRevenue / data.analytics.totalOrders).toLocaleString('id-ID')
-                        : 0
-                      }
+                        : 0}
                     </h3>
-                    <p className="text-xs text-purple-600 font-semibold mt-1">
-                      per transaksi
-                    </p>
+                    <p className="text-xs text-purple-600 font-semibold mt-1">per transaksi</p>
                   </div>
                   <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
                     <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -629,148 +601,189 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Main Charts Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Daily Revenue Chart - Bar Style */}
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <div className="mb-6">
-                  <h3 className="text-lg font-bold text-zinc-800">Omset Harian</h3>
-                  <p className="text-sm text-zinc-500">30 hari terakhir (hanya hari dengan transaksi)</p>
-                </div>
+            {/* Daily Revenue Chart (Clean) */}
+            <div className="bg-white rounded-xl shadow-md p-6">
+              <div className="mb-4">
+                <h3 className="text-lg font-bold text-zinc-800 mb-4">Omset Harian</h3>
 
-                {data?.analytics?.dailyRevenue && data.analytics.dailyRevenue.filter(d => d.total > 0).length > 0 ? (
-                  <div className="relative">
-                    <div className="flex h-64 items-end justify-between space-x-1">
-                      {data.analytics.dailyRevenue
-                        .filter(day => day.total > 0)
-                        .map((day) => {
-                          const maxRevenue = Math.max(...data.analytics.dailyRevenue.filter(d => d.total > 0).map(d => d.total));
-                          const heightPercent = (day.total / maxRevenue) * 100;
-                          
-                          return (
-                            <div key={day._id} className="flex-1 flex flex-col items-center group relative">
-                              {/* Tooltip */}
-                              <div className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                                <div className="bg-zinc-900 text-white text-xs rounded-lg py-2 px-3 whitespace-nowrap">
-                                  <div className="font-bold">Rp {day.total.toLocaleString('id-ID')}</div>
-                                  <div className="text-zinc-300">{day.count} orders</div>
-                                  <div className="text-zinc-400">
-                                    {new Date(day._id).toLocaleDateString('id-ID', { 
-                                      day: 'numeric',
-                                      month: 'short',
-                                      year: 'numeric'
-                                    })}
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              {/* Bar */}
-                              <div className="w-full flex items-end h-64">
-                                <div
-                                  className="w-full bg-gradient-to-t from-zinc-700 via-zinc-500 to-zinc-400 rounded-t-md hover:from-zinc-800 hover:via-zinc-600 hover:to-zinc-500 transition-all cursor-pointer shadow-sm"
-                                  style={{ height: `${heightPercent}%`, minHeight: '8px' }}
-                                ></div>
-                              </div>
-                              
-                              {/* X-Axis Label */}
-                              <div className="mt-2 text-center">
-                                <div className="text-[10px] font-medium text-zinc-600">
-                                  {new Date(day._id).toLocaleDateString('id-ID', { 
-                                    day: 'numeric',
-                                    month: 'short'
-                                  })}
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                    </div>
-                    <div className="w-full h-px bg-zinc-300 mt-1"></div>
+                <div className="flex flex-wrap gap-3 items-center">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setRevenueView('7days')}
+                      className={`px-4 py-2 text-sm font-semibold rounded-lg transition ${
+                        revenueView === '7days'
+                          ? 'bg-indigo-600 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      7 Hari Terakhir
+                    </button>
+                    <button
+                      onClick={() => setRevenueView('30days')}
+                      className={`px-4 py-2 text-sm font-semibold rounded-lg transition ${
+                        revenueView === '30days'
+                          ? 'bg-indigo-600 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      30 Hari Terakhir
+                    </button>
+                    <button
+                      onClick={() => setRevenueView('monthly')}
+                      className={`px-4 py-2 text-sm font-semibold rounded-lg transition ${
+                        revenueView === 'monthly'
+                          ? 'bg-indigo-600 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      Per Bulan
+                    </button>
                   </div>
-                ) : (
-                  <div className="h-64 flex items-center justify-center bg-zinc-50 rounded-lg">
-                    <div className="text-center text-zinc-400">
-                      <svg className="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                      </svg>
-                      <p className="text-sm font-medium">No data available</p>
-                    </div>
-                  </div>
-                )}
+
+                  {revenueView === 'monthly' && (
+                    <select
+                      value={selectedMonth}
+                      onChange={(e) => setSelectedMonth(e.target.value)}
+                      className="px-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                      <option value="01">Januari</option>
+                      <option value="02">Februari</option>
+                      <option value="03">Maret</option>
+                      <option value="04">April</option>
+                      <option value="05">Mei</option>
+                      <option value="06">Juni</option>
+                      <option value="07">Juli</option>
+                      <option value="08">Agustus</option>
+                      <option value="09">September</option>
+                      <option value="10">Oktober</option>
+                      <option value="11">November</option>
+                      <option value="12">Desember</option>
+                    </select>
+                  )}
+                </div>
               </div>
 
-              {/* Monthly Revenue Chart */}
-              <div className="bg-white rounded-xl shadow-md p-6">
-                <div className="mb-6">
-                  <h3 className="text-lg font-bold text-zinc-800">Omset Bulanan</h3>
-                  <p className="text-sm text-zinc-500">12 bulan terakhir</p>
-                </div>
+              {(() => {
+                let allDates = [];
+                const today = new Date();
 
-                {data?.analytics?.monthlyRevenue && data.analytics.monthlyRevenue.length > 0 ? (
-                  <div className="relative">
-                    <div className="flex h-64 items-end justify-between space-x-1">
-                      {data.analytics.monthlyRevenue.map((month) => {
-                        const maxRevenue = Math.max(...data.analytics.monthlyRevenue.map(m => m.total));
-                        const heightPercent = (month.total / maxRevenue) * 100;
-                        
-                        return (
-                          <div key={month._id} className="flex-1 flex flex-col items-center group relative">
-                            {/* Tooltip */}
-                            <div className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
-                              <div className="bg-zinc-900 text-white text-xs rounded-lg py-2 px-3 whitespace-nowrap">
-                                <div className="font-bold">Rp {month.total.toLocaleString('id-ID')}</div>
-                                <div className="text-zinc-300">{month.count} orders</div>
-                                <div className="text-zinc-400">
-                                  {new Date(month._id + '-01').toLocaleDateString('id-ID', { 
-                                    month: 'long',
-                                    year: 'numeric'
-                                  })}
-                                </div>
-                              </div>
-                            </div>
-                            
-                            {/* Bar */}
-                            <div className="w-full flex items-end h-64">
-                              <div
-                                className="w-full bg-gradient-to-t from-green-500 via-green-400 to-green-300 rounded-t-md hover:from-green-600 hover:via-green-500 hover:to-green-400 transition-all cursor-pointer shadow-sm"
-                                style={{ height: `${heightPercent}%`, minHeight: '12px' }}
-                              ></div>
-                            </div>
-                            
-                            {/* X-Axis Label */}
-                            <div className="mt-2 text-center">
-                              <div className="text-[10px] font-medium text-zinc-600">
-                                {new Date(month._id + '-01').toLocaleDateString('id-ID', { 
-                                  month: 'short',
-                                  year: '2-digit'
-                                })}
-                              </div>
-                            </div>
+                if (revenueView === '7days') {
+                  for (let i = 6; i >= 0; i--) {
+                    const date = new Date(today);
+                    date.setDate(today.getDate() - i);
+                    allDates.push(date.toISOString().split('T')[0]);
+                  }
+                } else if (revenueView === '30days') {
+                  for (let i = 29; i >= 0; i--) {
+                    const date = new Date(today);
+                    date.setDate(today.getDate() - i);
+                    allDates.push(date.toISOString().split('T')[0]);
+                  }
+                } else if (revenueView === 'monthly') {
+                  const year = today.getFullYear();
+                  const month = parseInt(selectedMonth);
+                  const daysInMonth = new Date(year, month, 0).getDate();
+                  for (let day = 1; day <= daysInMonth; day++) {
+                    const date = new Date(year, month - 1, day);
+                    allDates.push(date.toISOString().split('T')[0]);
+                  }
+                }
+
+                const dataMap = {};
+                (data?.analytics?.dailyRevenue || []).forEach(item => {
+                  dataMap[item._id] = item;
+                });
+
+                const completeData = allDates.map(date => ({
+                  date: date,
+                  total: dataMap[date]?.total || 0,
+                  count: dataMap[date]?.count || 0,
+                  displayDate: new Date(date).toLocaleDateString('id-ID', {
+                    day: '2-digit',
+                    month: '2-digit',
+                  })
+                }));
+
+                if (completeData.length === 0) {
+                  return (
+                    <div className="h-80 flex items-center justify-center bg-gray-50 rounded-lg">
+                      <div className="text-center text-gray-400">
+                        <svg className="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        <p className="text-sm font-medium">Tidak ada data</p>
+                      </div>
+                    </div>
+                  );
+                }
+
+                // Custom Tooltip Component
+                const CustomTooltip = ({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    return (
+                      <div className="bg-white border border-gray-300 rounded-lg py-2 px-3 shadow-lg">
+                        <div className="font-bold mb-1 text-gray-800">
+                          {new Date(payload[0].payload.date).toLocaleDateString('id-ID', {
+                            day: '2-digit',
+                            month: 'short',
+                          })}
+                        </div>
+                        <div className="text-gray-700 font-semibold">
+                          total : {payload[0].value.toLocaleString('id-ID')}
+                        </div>
+                        {payload[0].payload.count > 0 && (
+                          <div className="text-gray-500 text-xs mt-1">
+                            {payload[0].payload.count} transaksi
                           </div>
-                        );
-                      })}
-                    </div>
-                    <div className="w-full h-px bg-zinc-300 mt-1"></div>
+                        )}
+                      </div>
+                    );
+                  }
+                  return null;
+                };
+
+                return (
+                  <div className="w-full" style={{ height: '320px' }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart
+                        data={completeData}
+                        margin={{ top: 10, right: 30, left: 10, bottom: 20 }}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                        <XAxis
+                          dataKey="displayDate"
+                          tick={{ fontSize: 12, fill: '#6b7280' }}
+                          tickLine={false}
+                          axisLine={{ stroke: '#d1d5db' }}
+                          interval={completeData.length > 15 ? Math.ceil(completeData.length / 8) : 'preserveStartEnd'}
+                        />
+                        <YAxis
+                          tick={{ fontSize: 12, fill: '#6b7280' }}
+                          tickLine={false}
+                          axisLine={{ stroke: '#d1d5db' }}
+                          tickFormatter={(value) => (value / 1000).toFixed(0)}
+                        />
+                        <Tooltip content={<CustomTooltip />} />
+                        <Line
+                          type="monotone"
+                          dataKey="total"
+                          stroke="#8884d8"
+                          strokeWidth={2}
+                          dot={{ fill: '#8884d8', r: 3 }}
+                          activeDot={{ r: 5, fill: '#8884d8' }}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
                   </div>
-                ) : (
-                  <div className="h-64 flex items-center justify-center bg-zinc-50 rounded-lg">
-                    <div className="text-center text-zinc-400">
-                      <svg className="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                      </svg>
-                      <p className="text-sm font-medium">No data available</p>
-                    </div>
-                  </div>
-                )}
-              </div>
+                );
+              })()}
             </div>
 
             {/* Status Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Order Status */}
               <div className="bg-white rounded-xl shadow-md p-6">
                 <h3 className="text-lg font-bold text-zinc-800 mb-4">Status Pesanan</h3>
-                
+
                 {data?.analytics?.statusSummary && data.analytics.statusSummary.length > 0 ? (
                   <div className="space-y-3">
                     {data.analytics.statusSummary.map((status) => (
@@ -785,18 +798,26 @@ export default function AdminDashboard() {
                         }`}
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <span className={`text-sm font-bold ${
-                            status._id === 'PAID' ? 'text-green-800' :
-                            status._id === 'PENDING' ? 'text-yellow-800' :
-                            'text-red-800'
-                          }`}>
+                          <span
+                            className={`text-sm font-bold ${
+                              status._id === 'PAID'
+                                ? 'text-green-800'
+                                : status._id === 'PENDING'
+                                ? 'text-yellow-800'
+                                : 'text-red-800'
+                            }`}
+                          >
                             {status._id}
                           </span>
-                          <span className={`text-2xl font-bold ${
-                            status._id === 'PAID' ? 'text-green-700' :
-                            status._id === 'PENDING' ? 'text-yellow-700' :
-                            'text-red-700'
-                          }`}>
+                          <span
+                            className={`text-2xl font-bold ${
+                              status._id === 'PAID'
+                                ? 'text-green-700'
+                                : status._id === 'PENDING'
+                                ? 'text-yellow-700'
+                                : 'text-red-700'
+                            }`}
+                          >
                             {status.count}
                           </span>
                         </div>
@@ -812,7 +833,6 @@ export default function AdminDashboard() {
                   </div>
                 )}
               </div>
-
             </div>
           </div>
         )}
