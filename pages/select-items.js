@@ -160,7 +160,7 @@ export default function SelectItemsPage({ products }) {
 
 export async function getServerSideProps() {
   try {
-    const res = await fetch('http://localhost:3000/api/products');
+    const res = await fetch('http://api/products');
     const { data } = await res.json();
     return { props: { products: data } };
   } catch (error) {
