@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import { useState } from 'react';
 import ProfileIcon from '../components/ProfileIcon';
 import LoginChooser from '../components/LoginChooser'; // tetap diimport biar aman
+import clientPromise from '../lib/mongodb'; //baru
 
 // HANYA 3 kategori yang ditampilkan di UI
 const categories = ['All', 'Drinks', 'Additional'];
@@ -159,19 +160,35 @@ export default function SelectItemsPage({ products }) {
 }
 
 export async function getServerSideProps() {
+  console.log('🔍 getServerSideProps CALLED'); // Check if function runs
+  
   try {
-    // Gunakan absolute URL
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-    const res = await fetch(`${baseUrl}/api/products`);
+    const apiUrl = `${baseUrl}/api/products`;
+    
+    console.log('🌐 Base URL:', baseUrl);
+    console.log('📡 Fetching from:', apiUrl);
+    
+    const res = await fetch(apiUrl);
+    
+    console.log('📊 Response status:', res.status);
+    console.log('✅ Response ok:', res.ok);
     
     if (!res.ok) {
-      throw new Error('Failed to fetch products');
+      const errorText = await res.text();
+      console.error('❌ Response error:', errorText);
+      throw new Error(`Failed to fetch products: ${res.status}`);
     }
     
-    const { data } = await res.json();
-    return { props: { products: data || [] } };
+    const responseData = await res.json();
+    console.log('📦 Response data:', responseData);
+    console.log('🎯 Products array:', responseData.data);
+    console.log('📏 Products length:', responseData.data?.length);
+    
+    return { props: { products: responseData.data || [] } };
   } catch (error) {
-    console.error('Failed to fetch products:', error);
+    console.error('💥 Failed to fetch products:', error);
+    console.error('💥 Error stack:', error.stack);
     return { props: { products: [] } };
   }
 }
