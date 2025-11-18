@@ -160,9 +160,16 @@ export default function SelectItemsPage({ products }) {
 
 export async function getServerSideProps() {
   try {
-    const res = await fetch('/api/products');
+    // Gunakan absolute URL
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    const res = await fetch(`${baseUrl}/api/products`);
+    
+    if (!res.ok) {
+      throw new Error('Failed to fetch products');
+    }
+    
     const { data } = await res.json();
-    return { props: { products: data } };
+    return { props: { products: data || [] } };
   } catch (error) {
     console.error('Failed to fetch products:', error);
     return { props: { products: [] } };
